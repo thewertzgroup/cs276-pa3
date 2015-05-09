@@ -3,6 +3,7 @@ package edu.stanford.cs276;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -12,9 +13,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
+
+import edu.stanford.cs276.util.Pair;
 
 /**
  * This class is used to 1) load training data from files; 2) build idf from data collections in PA1.
@@ -110,7 +115,7 @@ public class LoadHandler {
 	}
 	
 	// Build document frequencies and then serializes to file
-	public static Map<String,Double> buildDFs(String dataDir, String idfFile)
+	public static Map<String,Double> buildDFs(String dataDir, String idfFile) throws IOException
 	{
 		
 		// Get root directory
@@ -131,14 +136,54 @@ public class LoadHandler {
 		/*
 		 * @//TODO : Your code here -- consult PA1 (will be a simplified version)
 		 */
+		// added by Maha		
+		Map<String,Set<Integer>> termDocSet = new HashMap<String,Set<Integer>>();
+		/* For each block */
+		for (File block : dirlist) {			
+			File blockDir = new File(root, block.getName());
+			File[] filelist = blockDir.listFiles();						
+			/* For each file */			
+			for (File file : filelist) {				
+				String fileName = block.getName() + "/" + file.getName();
+				totalDocCount++;
+															
+				BufferedReader reader = new BufferedReader(new FileReader(file));
+				String line;
+				while ((line = reader.readLine()) != null) {
+					String[] tokens = line.trim().split("\\s+");
+					for (String token : tokens) {
+						
+						if(!termDocSet.containsKey(token)) // the term is new
+						{ 				
+							Set<Integer> docSet = new HashSet<Integer>();		
+							docSet.add(totalDocCount-1); 
+							termDocSet.put(token, docSet); 							
+						}
+						else //the term appeared before as the term can appear many times						
+							termDocSet.get(token).add(totalDocCount-1); 	// will not add duplicate values																		 
+						 						
+					}
+				}
+				reader.close();
+			}
+		}
+		
 		
 		System.out.println(totalDocCount);
 		
+		// from termDocSet to termDocCount
+		for (String term : termDocSet.keySet()) {
+			double df = (double)termDocSet.get(term).size(); 					 
+			termDocCount.put(term, df); // just temporaily put the document frequency			
+		}
 		// Make idf using df
 		for (String term : termDocCount.keySet()) {
 			/*
 			 * @//TODO : Your code here
 			 */
+			double idf = Math.log((double)totalDocCount/termDocCount.get(term)); 
+			termDocCount.put(term, idf);
+			
 		}
 		
 		
