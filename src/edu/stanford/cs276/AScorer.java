@@ -29,8 +29,43 @@ public abstract class AScorer {
 		/*
 		 * @//TODO : Your code here
 		 */
-		
-		return tfQuery;
+	  // raw frequencies
+		// should be 1 for most queries but not necessarily true
+	  for(String term: q.queryWords)
+	  { 
+		  double value = 1.0; 
+		  if(!tfQuery.containsKey(term))
+			  tfQuery.put(term, 1.0);
+		  else
+		  { 
+			  value = tfQuery.get(term); 
+			  value += 1.0; 
+			  tfQuery.put(term, value); // replaces old value with new
+		  } 
+			  
+	  }
+	  
+	  // should we apply sublinear scaling? 
+	  // I don't believe it is necessary for the query, 
+	  // since mostly the term frequencies would be 1 and there is no huge discrepancy
+	  
+	  
+	  // document frequency
+	  double idfsTerm;
+	  double wqt; 
+	  for(String term: tfQuery.keySet())
+	  { 
+		  if(idfs.containsKey(term))
+			  idfsTerm = idfs.get(term);
+		  else
+			  idfsTerm = idfs.get(LoadHandler.specialTerm);
+			  
+		  wqt = tfQuery.get(term) * idfsTerm; 
+	  }
+	  
+	  // No normalization is needed for query length because any query length
+	  // normalization applies to all docs and so is not relevant to ranking.
+	  return tfQuery;
 	}
 	
 	

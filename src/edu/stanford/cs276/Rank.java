@@ -51,6 +51,8 @@ public class Rank {
 					/*
 					 * @//TODO : Your code here
 					 */
+					if (o2.getSecond().equals(o1.getSecond()))
+						return o1.getFirst().compareTo(o2.getFirst()); 
 					return o2.getSecond().compareTo(o1.getSecond());  
 					
 				}	
