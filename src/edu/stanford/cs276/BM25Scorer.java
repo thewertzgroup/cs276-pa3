@@ -55,10 +55,12 @@ public class BM25Scorer extends AScorer {
 		 * @//TODO : Your code here
 		 * 
 		 * https://piazza.com/class/i7hsnt5af2d6pi?cid=727
+		 * Assuming we can delete 'counts', and just keep a single count of the total # of documents to normalize by.
 		 */
-		Map<String,Integer> counts = new HashMap<>();
+		//Map<String,Integer> counts = new HashMap<>();
+		int docCount = 0;
 		
-		for (String tfType : this.TFTYPES) { counts.put(tfType, 0); }
+		//for (String tfType : this.TFTYPES) { counts.put(tfType, 0); }
 
 		for (Query q : queryDict.keySet())
 		{
@@ -67,23 +69,30 @@ public class BM25Scorer extends AScorer {
 			{
 				Document d = queryDict.get(q).get(url);
 				
+				docCount++;
+				
 				Map<String,Double> documentLengths = new HashMap<>();
 				for (String tfType : this.TFTYPES) { documentLengths.put(tfType, 0.0); }
 
 				documentLengths.put("title", (double)d.title.split("\\s+").length);
-				counts.put("title", counts.get("title") + 1);
+				//counts.put("title", counts.get("title") + 1);
 				
 				documentLengths.put("body", (double)d.body_length);
-				counts.put("body", counts.get("body") + 1);
+				//counts.put("body", counts.get("body") + 1);
 				
 				if (null != d.headers)
 				{
+					/*
+					 *  https://piazza.com/class/i7hsnt5af2d6pi?cid=727
+					 *  Yuhao Zhang: No. You should calculate the total length by concatenating all the headers.
+					 */
+					
 					Double length = 0.0;
 					for (String header : d.headers)
 					{
 						length += (double)header.split("\\s+").length;
 						// TODO: Do we want average header length, or average header terms per document? Move outside the 'for' loop if the latter. cw
-						counts.put("header", counts.get("header") + 1);
+						//counts.put("header", counts.get("header") + 1);
 					}
 					documentLengths.put("header", length);
 				}
@@ -96,7 +105,7 @@ public class BM25Scorer extends AScorer {
 						// TODO: Multiple number of anchor terms x number of anchors? cs
 						length += (double)anchor.split("\\s+").length * (double)d.anchors.get(anchor);
 						// TODO: Are we sure to only add 1 here? See question on headers as well. cw
-						counts.put("anchor", counts.get("anchor") + 1);
+						//counts.put("anchor", counts.get("anchor") + 1);
 					}
 					documentLengths.put("anchor", length);
 				}
@@ -120,7 +129,8 @@ public class BM25Scorer extends AScorer {
 			{
 				tfTypeSum += lengths.get(d).get(tfType);
 			}
-			avgLengths.put(tfType, tfTypeSum / counts.get(tfType));
+			//avgLengths.put(tfType, tfTypeSum / counts.get(tfType));
+			avgLengths.put(tfType, tfTypeSum / docCount);
 		}
 
 	}
