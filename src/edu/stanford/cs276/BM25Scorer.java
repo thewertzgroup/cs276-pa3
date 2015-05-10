@@ -58,7 +58,11 @@ public class BM25Scorer extends AScorer {
 		
 		/*
 		 * @//TODO : Your code here
+		 * 
+		 * https://piazza.com/class/i7hsnt5af2d6pi?cid=727
+		 * Assuming we can delete 'counts', and just keep a single count of the total # of documents to normalize by.
 		 */
+
 		// for every field, compute the avlen over all the collection
 		double avlenURL, avLenTitle, avLenBody, avLenHeader, avLenAnchor; 
 		avlenURL = avLenTitle = avLenBody = avLenHeader = avLenAnchor = 0.0; 
@@ -132,6 +136,7 @@ public class BM25Scorer extends AScorer {
 				lengths.put(doc, lendthsPerdoc); 
 				
 			}			
+
 			
 		}
 		
@@ -168,6 +173,7 @@ public class BM25Scorer extends AScorer {
 			/*
 			 * @//TODO : Your code here
 			 */
+
 				len = lengths.get(d).get(tfType);
 				if(avgLengths.get(tfType) !=0.0) // should always be true
 					lengths.get(d).put(tfType, len/avgLengths.get(tfType));							
@@ -191,6 +197,7 @@ public class BM25Scorer extends AScorer {
 		weight.put("anchor", anchorweight);
 		
 		
+
 
 	}
 
