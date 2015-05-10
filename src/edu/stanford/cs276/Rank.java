@@ -178,5 +178,9 @@ public class Rank {
 		
 		// Print results
 		printRankedResults(queryRankings);
+		
+		//write to file to use ndcg.java
+		String outputFilePath = "queryRankings.rk";
+		writeRankedResultsToFile(queryRankings, outputFilePath);
 	}
 }
