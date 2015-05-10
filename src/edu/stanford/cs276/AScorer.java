@@ -118,6 +118,33 @@ public abstract class AScorer {
 		return Arrays.asList(headersTerms); 
 	}
 	
+	Map<List<String>, Integer> parseAnchors(Map<String, Integer> anchors)
+	{
+		
+		Map<List<String>, Integer> anchorTermsMul = new HashMap<List<String>, Integer>();		
+		List<String> anchorTerms;		
+		int anchor_freq; 
+		if(anchors!=null)
+		{ 
+			for(String anchor: anchors.keySet())	
+			{ 
+				anchor_freq  = anchors.get(anchor); 
+				anchorTerms = Arrays.asList(anchor.toLowerCase().split("\\+"));// splitting on space
+				
+				anchorTermsMul.put(anchorTerms, anchor_freq); 												
+			}			
+			
+		} 
+		else 			
+			{ 			
+				String dumAnchor = "";		
+				anchorTerms = Arrays.asList(dumAnchor.split("\\+"));// splitting on space
+				anchorTermsMul.put(anchorTerms, 0); 	
+			} 
+			
+		return anchorTermsMul; 
+	}
+	
 	Map<String, Double> getAnchorsTFS(Map<String, Integer> anchors, Query q)
 	{
 		Map<String, Double> tf_anchor = new HashMap<String, Double>();

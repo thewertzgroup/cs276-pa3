@@ -69,7 +69,7 @@ public class BM25Scorer extends AScorer {
 		int numURL, numTitle, numBody, numHeader, numAnchor; 
 		numURL = numTitle = numBody = numHeader = numAnchor = 0;
 		Document doc; 		  
-		Map<String,Double> lendthsPerdoc = new HashMap<String,Double>();
+		Map<String,Double> lengthsPerdoc = new HashMap<String,Double>();
 		double len; 
 		for(Query q: queryDict.keySet())
 		{ 
@@ -90,50 +90,62 @@ public class BM25Scorer extends AScorer {
 			{ 
 				doc = queryDict.get(q).get(url); 
 				
-				lendthsPerdoc.put("url", (double) doc.url.length()); 				
-				avlenURL += lendthsPerdoc.get("url"); 
+				lengthsPerdoc.put("url", (double) parseURL(doc.url).size()); 				
+				avlenURL += lengthsPerdoc.get("url"); 
 				numURL++; 
 				
-				if(doc.title == null)
-					lendthsPerdoc.put("title", 0.0); 
-				else
-				{ 
-					lendthsPerdoc.put("title", (double) doc.title.length());
-					avLenTitle += lendthsPerdoc.get("title"); 
+			//	if(doc.title == null)
+			//		lendthsPerdoc.put("title", 0.0); 
+			//	else
+			//	{ 
+					lengthsPerdoc.put("title", (double) parseTitle(doc.title).size());
+					avLenTitle += lengthsPerdoc.get("title"); 
 					numTitle++;
-				} 
+			//	} 
 				
-				lendthsPerdoc.put("body" , (double) doc.body_length);
-				avLenBody += lendthsPerdoc.get("body"); 
+				lengthsPerdoc.put("body" , (double) doc.body_length);
+				avLenBody += lengthsPerdoc.get("body"); 
 				numBody++;
 				
-				len = 0.0; 				
+				/*	len = 0.0; 				
 				if(doc.headers == null)				
-					lendthsPerdoc.put("header" , len);
+					lengthsPerdoc.put("header" , len);
 				else 
 				{ 
 					// assume that there is one big document that contains all of the headers
 					for(int headerInd = 0; headerInd<doc.headers.size(); headerInd++ )
 						len += (double) doc.headers.get(headerInd).length();
-					lendthsPerdoc.put("header" , len);
+					lengthsPerdoc.put("header" , len);
 					avLenHeader += len;  
 					numHeader++;
 				} 
+				*/				
+				lengthsPerdoc.put("header" , (double) parseHeaders(doc.headers).size());
+				avLenHeader += lengthsPerdoc.get("header");  
+				numHeader++;
 				
-				len = 0.0; 
+				/*len = 0.0; 
 				if(doc.anchors == null)				
-					lendthsPerdoc.put("anchor" , len);
+					lengthsPerdoc.put("anchor" , len);
 				else 
 				{ 
 					// assume that there is one big document that	contains all of the anchors 
 	    			// with the anchor text multiplied by the anchor count.
 					for(String anchor:doc.anchors.keySet())
 						len  += (double) anchor.length()*doc.anchors.get(anchor);
-					lendthsPerdoc.put("anchor" , len);
+					lengthsPerdoc.put("anchor" , len);
 					avLenAnchor += len; 
 					numAnchor++; 			
-				} 
-				lengths.put(doc, lendthsPerdoc); 
+				} */
+				len = 0.0;
+				Map<List<String>, Integer> anchorTermsMul = parseAnchors(doc.anchors); 
+				for(List<String> anchorList:anchorTermsMul.keySet())
+					len  += (double) anchorList.size()*anchorTermsMul.get(anchorList);
+				lengthsPerdoc.put("anchor" , len);
+				avLenAnchor += len; 
+				numAnchor++;
+				
+				lengths.put(doc, lengthsPerdoc); 
 				
 			}			
 
