@@ -68,45 +68,56 @@ public class BM25Scorer extends AScorer {
 				Document d = queryDict.get(q).get(url);
 				
 				Map<String,Double> documentLengths = new HashMap<>();
-				
+				for (String tfType : this.TFTYPES) { documentLengths.put(tfType, 0.0); }
+
 				documentLengths.put("title", (double)d.title.split("\\s+").length);
 				counts.put("title", counts.get("title") + 1);
 				
 				documentLengths.put("body", (double)d.body_length);
 				counts.put("body", counts.get("body") + 1);
 				
-				for (String header : d.headers)
+				if (null != d.headers)
 				{
-					if (null == documentLengths.get("header"))
+					for (String header : d.headers)
 					{
-						documentLengths.put("header", (double)header.split("\\s+").length);
+						if (null == documentLengths.get("header"))
+						{
+							documentLengths.put("header", (double)header.split("\\s+").length);
+						}
+						else
+						{
+							documentLengths.put("header", documentLengths.get("header") + (double)header.split("\\s+").length);
+						}
+						// TODO: Do we want average header length, or average header terms per document? Move outside the 'for' loop if the latter. cw
+						counts.put("header", counts.get("header") + 1);
 					}
-					else
-					{
-						documentLengths.put("header", documentLengths.get("header") + (double)header.split("\\s+").length);
-					}
-					counts.put("header", counts.get("header") + 1);
 				}
 				
-				for (String anchor : d.anchors.keySet())
+				if (null != d.anchors)
 				{
-					// TODO: Multiple number of anchor terms x number of anchors? cs
-					double anchorLength = (double)anchor.split("\\s+").length * (double)d.anchors.get(anchor);
-					
-					if (null == documentLengths.get("anchor"))
+					for (String anchor : d.anchors.keySet())
 					{
-						documentLengths.put("anchor", anchorLength);
+						// TODO: Multiple number of anchor terms x number of anchors? cs
+						double anchorLength = (double)anchor.split("\\s+").length * (double)d.anchors.get(anchor);
+						
+						if (null == documentLengths.get("anchor"))
+						{
+							documentLengths.put("anchor", anchorLength);
+						}
+						else
+						{
+							documentLengths.put("anchor", documentLengths.get("anchor") + anchorLength);
+						}
+						// TODO: Are we sure to only add 1 here? See question on headers as well. cw
+						counts.put("anchor", counts.get("anchor") + 1);
 					}
-					else
-					{
-						documentLengths.put("anchor", documentLengths.get("anchor") + anchorLength);
-					}
-					counts.put("anchor", counts.get("anchor") + 1); // TODO: Are we sure to only add 1 here? cw
 				}
 				
 				// "url","title","body","header","anchor"
 				
 				pagerankScores.put(d, (double)d.page_rank);
+
+				lengths.put(d,  documentLengths);
 			}
 			
 		}
@@ -116,10 +127,12 @@ public class BM25Scorer extends AScorer {
 			/*
 			 * @//TODO : Your code here
 			 */
+			double tfTypeSum = 0.0;
 			for (Document d : lengths.keySet())
 			{
-				lengths.get(d).get(tfType);
+				tfTypeSum += lengths.get(d).get(tfType);
 			}
+			avgLengths.put(tfType, tfTypeSum / counts.get(tfType));
 		}
 
 	}
