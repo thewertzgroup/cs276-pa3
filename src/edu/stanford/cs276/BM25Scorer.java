@@ -1,6 +1,5 @@
 package edu.stanford.cs276;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -173,7 +172,7 @@ public class BM25Scorer extends AScorer {
 			avgLengths.put("header", 0.0);
 		
 		if(numAnchor!=0)
-			avgLengths.put("anchor", avLenHeader/numAnchor);
+			avgLengths.put("anchor", avLenAnchor/numAnchor);
 		else 
 			avgLengths.put("anchor", 0.0);
 			
