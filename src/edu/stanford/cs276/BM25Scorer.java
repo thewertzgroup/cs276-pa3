@@ -84,7 +84,7 @@ public class BM25Scorer extends AScorer {
 				{
 					/*
 					 *  https://piazza.com/class/i7hsnt5af2d6pi?cid=727
-					 *  Yuhao Zhang: No. You should calculate the total length by concatenating all the headers.
+					 *  Yuhao Zhang: You should calculate the total length by concatenating all the headers.
 					 */
 					
 					Double length = 0.0;
