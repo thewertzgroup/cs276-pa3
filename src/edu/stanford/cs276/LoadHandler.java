@@ -174,7 +174,7 @@ public class LoadHandler {
 		{			 
 			Set<Integer> docSet = new HashSet<Integer>();				
 			termDocSet.put(specialTerm, docSet); 
-			System.out.println("success");
+	//		System.out.println("success");
 		}
 		System.out.println(totalDocCount);
 		

@@ -2,6 +2,7 @@ package edu.stanford.cs276;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,6 +62,7 @@ public abstract class AScorer {
 			  idfsTerm = idfs.get(LoadHandler.specialTerm);
 			  
 		  wqt = tfQuery.get(term) * idfsTerm; 
+		  tfQuery.put(term, wqt); 
 	  }
 	  
 	  // No normalization is needed for query length because any query length
@@ -68,7 +70,7 @@ public abstract class AScorer {
 	  return tfQuery;
 	}
 	
-	
+
 	////////////// Initialization/Parsing Methods ///////////////
 	
 	/*
@@ -76,6 +78,111 @@ public abstract class AScorer {
 	 */
 
     /////////////////////////////////////////////////////////////
+	List<String> parseURL(String url)
+	{ 
+		String[] urlTerms = url.split("[^a-zA-Z0-9]");// splitting on non alphanumeric characters
+		// turn to lower case
+		for(int ind = 0; ind<urlTerms.length; ind++)
+			urlTerms[ind] = urlTerms[ind].toLowerCase(); 		
+		return Arrays.asList(urlTerms); 
+	}
+	
+	List<String> parseTitle(String title)
+	{ 
+		 
+		if(title!=null)
+		{ 
+			String[] titleTerms;
+			titleTerms = title.toLowerCase().split("\\+");// splitting on space		
+			return Arrays.asList(titleTerms); 			
+		} 
+		
+		List<String> emptyList = new ArrayList<String>();
+		emptyList.add(""); 
+		return emptyList;
+		
+	}
+	
+	List<String> parseHeaders(List<String> headers)
+	{
+		// all headers in one string 
+		String allHeaders = ""; 
+		if(headers!=null)
+		{ 
+			System.out.println("num of headers " + headers.size()); 
+			for(int headerInd = 0; headerInd < headers.size(); headerInd++)		
+				allHeaders = allHeaders + " " + headers.get(headerInd).trim().toLowerCase();  
+			} 
+		String[] headersTerms = allHeaders.split("\\+");// splitting on space
+
+		return Arrays.asList(headersTerms); 
+	}
+	
+	Map<String, Double> getAnchorsTFS(Map<String, Integer> anchors, Query q)
+	{
+		Map<String, Double> tf_anchor = new HashMap<String, Double>();
+		String key; 
+		if(anchors!=null)
+		{ 
+			List<String> anchorTerms;
+			double freq; 			
+			int anchor_freq; 
+				
+			for(String anchor: anchors.keySet())	
+			{ 
+				anchor_freq  = anchors.get(anchor); 
+				anchorTerms = Arrays.asList(anchor.toLowerCase().split("\\+"));// splitting on space			 
+			
+				for(int queryTInd = 0; queryTInd < q.queryWords.size(); queryTInd++)
+				{ 			
+					key = q.queryWords.get(queryTInd); 
+					freq = (double) Collections.frequency(anchorTerms, key)*anchor_freq;
+					if(tf_anchor.containsKey(key))
+						freq += tf_anchor.get(key); 
+					tf_anchor.put(key, freq); 					
+				}
+					
+				}
+			// sublinear scaling?
+			//..
+			for(String term: tf_anchor.keySet())	
+			{
+				freq = tf_anchor.get(term);
+				if(freq!=0)
+				{ 
+					freq = 1.0 + Math.log(freq); 
+					tf_anchor.put(term, freq);
+				} 
+			}
+			
+		} 
+		else 
+			for(int queryTInd = 0; queryTInd < q.queryWords.size(); queryTInd++)
+			{ 			
+				key = q.queryWords.get(queryTInd); 				 
+				tf_anchor.put(key, 0.0); 		
+			} 
+			
+		return tf_anchor; 
+	}
+/*	
+	Map<String, Double> parseBodyHits(Map<String, List<Integer>> body_hits, Query q)
+	{
+		Map<String, Double> tf_bodyHits = initializeTF(q);
+		 
+		for(String term: body_hits.keySet())		
+			tf_bodyHits.put(term, (double)body_hits.get(term).size()) ;			
+		
+		return tf_bodyHits; 
+	}
+	*/
+	Map<String, Double> initializeTF(Query q)
+	{ 
+		Map<String, Double> tf = new HashMap<String, Double>();
+		for(int queryTInd = 0; queryTInd < q.queryWords.size(); queryTInd++)		
+			tf.put(q.queryWords.get(queryTInd), 0.0); 					
+		return tf; 
+	} 	
 	
 	
 	/*/
@@ -92,15 +199,56 @@ public abstract class AScorer {
 		 * @//TODO : Your code here
 		 */
 		
-	    ////////////////////////////////////////////////////////
-		
+	    ////////////////////////////////////////////////////////		
+		// initializing 
+		tfs.put("url", new HashMap<String, Double>());
+		tfs.put("title", new HashMap<String, Double>());
+		tfs.put("body", new HashMap<String, Double>());
+		tfs.put("header", new HashMap<String, Double>());
+		// anchor will be taken care of later
+		// parsing 
+		List<String> urlTerms = parseURL(d.url); 
+		List<String> titleTerms = parseTitle(d.title); 
+		List<String> headersTerms = parseHeaders(d.headers); 
+
 		// Loop through query terms and increase relevant tfs. Note: you should do this to each type of term frequencies.
+		//TFTYPES = {"url","title","body","header","anchor"};
+		double freq = 0; 
 		for (String queryWord : q.queryWords) {
 			/*
 			 * @//TODO : Your code here
 			 */
 			
+			freq = (double) Collections.frequency(urlTerms, queryWord);
+			// sublinear scaling??
+			//..
+			tfs.get("url").put(queryWord, freq);
+			
+			freq = (double) Collections.frequency(titleTerms, queryWord);
+			// sublinear scaling?
+			//..			
+			tfs.get("title").put(queryWord, freq);
+			
+			if(d.body_hits!= null && d.body_hits.containsKey(queryWord))
+			{ 
+				// apply sublinear scaling first				
+				freq = 1.0 + Math.log((double)d.body_hits.get(queryWord).size()); 
+				tfs.get("body").put(queryWord, freq) ;
+			} 
+			else 
+				tfs.get("body").put(queryWord, 0.0) ;
+			
+			freq = (double) Collections.frequency(headersTerms, queryWord);
+			// sublinear scaling?
+			//..	
+			tfs.get("header").put(queryWord, freq);									
 		}
+		
+		// finally 
+		// compute and add the tfs for the anchors		
+		Map<String, Double> tfs_anchors = getAnchorsTFS(d.anchors, q);
+		tfs.put("anchor", tfs_anchors);
+
 		return tfs;
 	}
 
