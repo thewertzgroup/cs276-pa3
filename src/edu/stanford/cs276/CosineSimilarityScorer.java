@@ -25,13 +25,13 @@ public class CosineSimilarityScorer extends AScorer {
 	}
 
 	/////////////// Weights //////////////////
-	double urlweight = 1;
-	double titleweight = 1;
-	double bodyweight = 1;
-	double headerweight = 1;
-	double anchorweight = 1;
+	double urlweight = 15;
+	double titleweight = 30;
+	double bodyweight = 10;
+	double headerweight = 25;
+	double anchorweight = 30;
 
-	double smoothingBodyLength = 500.0; // Smoothing factor when the body length is 0.
+	double smoothingBodyLength = 2000.0; // Smoothing factor when the body length is 0.
 	//////////////////////////////////////////
 
 	public double getNetScore(Map<String, Map<String, Double>> tfs, Query q, Map<String,Double> tfQuery, Document d) {
@@ -56,6 +56,7 @@ public class CosineSimilarityScorer extends AScorer {
 
 	// Normalize the term frequencies. Note that we should give uniform normalization to all fields as discussed
 	// in the assignment handout.
+	// also add sublinear scaling here if needed 
 	public void normalizeTFs(Map<String,Map<String, Double>> tfs,Document d, Query q) {
 		/*
 		 * @//TODO : Your code here
@@ -66,35 +67,50 @@ public class CosineSimilarityScorer extends AScorer {
 		{		
 			freq = tfs.get("url").get(term); 
 			if(freq!=0)
-			{ 			 
+			{ 
+				// apply sublinear scaling ??	
+				//..
+				// normalize
 				freq *= bodyLength_inv;
 				tfs.get("url").put(term, freq);
 			} 
 			
 			freq = tfs.get("title").get(term); 
 			if(freq!=0)
-			{ 			 
+			{ 	
+				// apply sublinear scaling ??	
+				//..
+				// normalize
 				freq *= bodyLength_inv;
 				tfs.get("title").put(term, freq);
 			}
 			
 			freq = tfs.get("body").get(term); 
 			if(freq!=0)
-			{ 			 
+			{
+				// apply sublinear scaling first				
+				freq = 1.0 + Math.log(freq);
+				// normalize
 				freq *= bodyLength_inv;
 				tfs.get("body").put(term, freq);
 			}
 			
 			freq = tfs.get("header").get(term); 
 			if(freq!=0)
-			{ 			 
+			{ 	
+				// apply sublinear scaling ??	
+				//..
+				// normalize
 				freq *= bodyLength_inv;
 				tfs.get("header").put(term, freq);
 			}
 			
 			freq = tfs.get("anchor").get(term); 
 			if(freq!=0)
-			{ 			 
+			{ 	
+				// apply sublinear scaling ??	
+				freq = 1.0 + Math.log(freq); 
+				// normalize
 				freq *= bodyLength_inv;
 				tfs.get("anchor").put(term, freq);
 			}

@@ -109,7 +109,7 @@ public abstract class AScorer {
 		String allHeaders = ""; 
 		if(headers!=null)
 		{ 
-			System.out.println("num of headers " + headers.size()); 
+		//	System.out.println("num of headers " + headers.size()); 
 			for(int headerInd = 0; headerInd < headers.size(); headerInd++)		
 				allHeaders = allHeaders + " " + headers.get(headerInd).trim().toLowerCase();  
 			} 
@@ -142,18 +142,7 @@ public abstract class AScorer {
 					tf_anchor.put(key, freq); 					
 				}
 					
-				}
-			// sublinear scaling?
-			//..
-			for(String term: tf_anchor.keySet())	
-			{
-				freq = tf_anchor.get(term);
-				if(freq!=0)
-				{ 
-					freq = 1.0 + Math.log(freq); 
-					tf_anchor.put(term, freq);
-				} 
-			}
+				}			
 			
 		} 
 		else 
@@ -189,6 +178,7 @@ public abstract class AScorer {
 	 * Creates the various kinds of term frequencies (url, title, body, header, and anchor)
 	 * You can override this if you'd like, but it's likely that your concrete classes will share this implementation.
 	 */
+	// returns the raw term frequencies of the fields. 
 	public Map<String,Map<String, Double>> getDocTermFreqs(Document d, Query q) {
 		// Map from tf type -> queryWord -> score
 		Map<String,Map<String, Double>> tfs = new HashMap<String,Map<String, Double>>();
@@ -220,27 +210,20 @@ public abstract class AScorer {
 			 */
 			
 			freq = (double) Collections.frequency(urlTerms, queryWord);
-			// sublinear scaling??
-			//..
 			tfs.get("url").put(queryWord, freq);
 			
 			freq = (double) Collections.frequency(titleTerms, queryWord);
-			// sublinear scaling?
-			//..			
 			tfs.get("title").put(queryWord, freq);
 			
 			if(d.body_hits!= null && d.body_hits.containsKey(queryWord))
-			{ 
-				// apply sublinear scaling first				
-				freq = 1.0 + Math.log((double)d.body_hits.get(queryWord).size()); 
+			{ 				
+				freq = (double)d.body_hits.get(queryWord).size(); 
 				tfs.get("body").put(queryWord, freq) ;
 			} 
 			else 
 				tfs.get("body").put(queryWord, 0.0) ;
 			
 			freq = (double) Collections.frequency(headersTerms, queryWord);
-			// sublinear scaling?
-			//..	
 			tfs.get("header").put(queryWord, freq);									
 		}
 		
