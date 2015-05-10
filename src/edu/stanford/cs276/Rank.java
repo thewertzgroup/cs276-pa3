@@ -51,7 +51,8 @@ public class Rank {
 					/*
 					 * @//TODO : Your code here
 					 */
-					return -1;
+					return o2.getSecond().compareTo(o1.getSecond());  
+					
 				}	
 			});
 			
@@ -127,6 +128,22 @@ public class Rank {
 		/*
 		 * @//TODO : Your code here to handle idfs
 		 */
+		String dataDir = "C:/Users/Maha/Documents/MassiveDataProgram/CS276/problemAssignments/PA1/cs276-pa1/data"; 
+		String idfFile = "idfFile.idf";
+		File idfFileInstance = new File(idfFile);
+		if (idfFileInstance.exists())
+		{ 
+			System.out.println("loading...");
+			idfs = LoadHandler.loadDFs(idfFile);
+		} 
+		else
+		{ 
+			System.out.println("building...");
+			idfs = LoadHandler.buildDFs(dataDir, idfFile);
+		} 
+		
+			
+		
 
 		if (args.length < 2) {
 			System.err.println("Insufficient number of arguments: <queryDocTrainData path> taskType");
