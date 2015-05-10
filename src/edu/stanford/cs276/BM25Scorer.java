@@ -78,39 +78,27 @@ public class BM25Scorer extends AScorer {
 				
 				if (null != d.headers)
 				{
+					Double length = 0.0;
 					for (String header : d.headers)
 					{
-						if (null == documentLengths.get("header"))
-						{
-							documentLengths.put("header", (double)header.split("\\s+").length);
-						}
-						else
-						{
-							documentLengths.put("header", documentLengths.get("header") + (double)header.split("\\s+").length);
-						}
+						length += (double)header.split("\\s+").length;
 						// TODO: Do we want average header length, or average header terms per document? Move outside the 'for' loop if the latter. cw
 						counts.put("header", counts.get("header") + 1);
 					}
+					documentLengths.put("header", length);
 				}
 				
 				if (null != d.anchors)
 				{
+					Double length = 0.0;
 					for (String anchor : d.anchors.keySet())
 					{
 						// TODO: Multiple number of anchor terms x number of anchors? cs
-						double anchorLength = (double)anchor.split("\\s+").length * (double)d.anchors.get(anchor);
-						
-						if (null == documentLengths.get("anchor"))
-						{
-							documentLengths.put("anchor", anchorLength);
-						}
-						else
-						{
-							documentLengths.put("anchor", documentLengths.get("anchor") + anchorLength);
-						}
+						length += (double)anchor.split("\\s+").length * (double)d.anchors.get(anchor);
 						// TODO: Are we sure to only add 1 here? See question on headers as well. cw
 						counts.put("anchor", counts.get("anchor") + 1);
 					}
+					documentLengths.put("anchor", length);
 				}
 				
 				// "url","title","body","header","anchor"
