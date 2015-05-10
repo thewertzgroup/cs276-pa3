@@ -130,8 +130,8 @@ public class Rank {
 		/*
 		 * @//TODO : Your code here to handle idfs
 		 */
-		String dataDir = "C:/Users/Maha/Documents/MassiveDataProgram/CS276/problemAssignments/PA1/cs276-pa1/data"; 
-		String idfFile = "idfFile.idf";
+		String dataDir = "2015.data"; 
+		String idfFile = "2015.data/idfFile.idf";
 		File idfFileInstance = new File(idfFile);
 		if (idfFileInstance.exists())
 		{ 
