@@ -53,13 +53,73 @@ public class BM25Scorer extends AScorer {
 		
 		/*
 		 * @//TODO : Your code here
+		 * 
+		 * https://piazza.com/class/i7hsnt5af2d6pi?cid=727
 		 */
+		Map<String,Integer> counts = new HashMap<>();
+		
+		for (String tfType : this.TFTYPES) { counts.put(tfType, 0); }
+
+		for (Query q : queryDict.keySet())
+		{
+
+			for (String url : queryDict.get(q).keySet())
+			{
+				Document d = queryDict.get(q).get(url);
+				
+				Map<String,Double> documentLengths = new HashMap<>();
+				
+				documentLengths.put("title", (double)d.title.split("\\s+").length);
+				counts.put("title", counts.get("title") + 1);
+				
+				documentLengths.put("body", (double)d.body_length);
+				counts.put("body", counts.get("body") + 1);
+				
+				for (String header : d.headers)
+				{
+					if (null == documentLengths.get("header"))
+					{
+						documentLengths.put("header", (double)header.split("\\s+").length);
+					}
+					else
+					{
+						documentLengths.put("header", documentLengths.get("header") + (double)header.split("\\s+").length);
+					}
+					counts.put("header", counts.get("header") + 1);
+				}
+				
+				for (String anchor : d.anchors.keySet())
+				{
+					// TODO: Multiple number of anchor terms x number of anchors? cs
+					double anchorLength = (double)anchor.split("\\s+").length * (double)d.anchors.get(anchor);
+					
+					if (null == documentLengths.get("anchor"))
+					{
+						documentLengths.put("anchor", anchorLength);
+					}
+					else
+					{
+						documentLengths.put("anchor", documentLengths.get("anchor") + anchorLength);
+					}
+					counts.put("anchor", counts.get("anchor") + 1); // TODO: Are we sure to only add 1 here? cw
+				}
+				
+				// "url","title","body","header","anchor"
+				
+				pagerankScores.put(d, (double)d.page_rank);
+			}
+			
+		}
 		
 		//normalize avgLengths
 		for (String tfType : this.TFTYPES) {
 			/*
 			 * @//TODO : Your code here
 			 */
+			for (Document d : lengths.keySet())
+			{
+				lengths.get(d).get(tfType);
+			}
 		}
 
 	}
