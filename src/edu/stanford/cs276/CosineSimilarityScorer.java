@@ -45,14 +45,17 @@ public class CosineSimilarityScorer extends AScorer
 		
 		/*
 		 * @//TODO : Your code here
+		 * 
+		 * Dot product over the query vector:
+		 * qv_q · (c_u · tf_d,u + c_t · tf_d,t + c_b · tf_d,b + c_h · tf_d,h + c_a · tf_d,a)
 		 */
 		for(String term: tfQuery.keySet())	
 		{	
-			score += tfQuery.get(term)*(urlweight*tfs.get("url").get(term)
-					  + titleweight*tfs.get("title").get(term)
-					  + bodyweight*tfs.get("body").get(term)
-					  + headerweight*tfs.get("header").get(term)
-					  + anchorweight*tfs.get("anchor").get(term)); 
+			score += tfQuery.get(term) * ( urlweight*tfs.get("url").get(term)
+										   + titleweight*tfs.get("title").get(term)
+										   + bodyweight*tfs.get("body").get(term)
+										   + headerweight*tfs.get("header").get(term)
+										   + anchorweight*tfs.get("anchor").get(term) ); 
 			
 		}
 		
