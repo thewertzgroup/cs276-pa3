@@ -39,7 +39,7 @@ public class Rank {
 		for (Query query : queryDict.keySet()) {
 			// Loop through urls for query, getting scores
 			List<Pair<String,Double>> urlAndScores = new ArrayList<Pair<String,Double>>(queryDict.get(query).size());
-			for (String url : queryDict.get(query).keySet()) {
+			for (String url : queryDict.get(query).keySet()) {				 
 				double score = scorer.getSimScore(queryDict.get(query).get(url), query);
 				urlAndScores.add(new Pair<String,Double>(url,score));
 			}
@@ -51,6 +51,8 @@ public class Rank {
 					/*
 					 * @//TODO : Your code here
 					 */
+					if (o2.getSecond().equals(o1.getSecond()))
+						return o1.getFirst().compareTo(o2.getFirst()); 
 					return o2.getSecond().compareTo(o1.getSecond());  
 					
 				}	

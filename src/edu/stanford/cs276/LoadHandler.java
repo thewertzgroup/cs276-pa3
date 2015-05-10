@@ -25,6 +25,7 @@ import edu.stanford.cs276.util.Pair;
  * This class is used to 1) load training data from files; 2) build idf from data collections in PA1.
  */
 public class LoadHandler {
+	public static String specialTerm = "%&%#"; // special term will be needed later in AScorer for laplace smoothing for terms not in this trainihg corpus
 	
 	public static Map<Query,Map<String, Document>> loadTrainData(String feature_file_name) throws Exception {
 		File feature_file = new File(feature_file_name);
@@ -169,7 +170,15 @@ public class LoadHandler {
 		}
 		
 		
+		if(!termDocSet.containsKey(specialTerm)) // the term is new
+		{			 
+			Set<Integer> docSet = new HashSet<Integer>();				
+			termDocSet.put(specialTerm, docSet); 
+	//		System.out.println("success");
+		}
 		System.out.println(totalDocCount);
+		
+		//NplusOne = totalDocCount + 1; // will be needed later in AScorer for laplace smoothing for terms not in this trainihg corpus  
 		
 		// from termDocSet to termDocCount
 		for (String term : termDocSet.keySet()) {
@@ -181,10 +190,12 @@ public class LoadHandler {
 			/*
 			 * @//TODO : Your code here
 			 */
-			double idf = Math.log((double)totalDocCount/termDocCount.get(term)); 
+			double idf = Math.log((double)(totalDocCount+1)/(termDocCount.get(term)+1));// add 1 smoothing: laplace 		 
 			termDocCount.put(term, idf);
 			
 		}
+		
+		
 		
 		
 		// Save to file
