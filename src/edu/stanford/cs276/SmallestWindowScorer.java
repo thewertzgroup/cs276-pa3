@@ -22,13 +22,20 @@ import edu.stanford.cs276.util.Pair;
 public class SmallestWindowScorer extends CosineSimilarityScorer {
 
 	/////// Smallest window specific hyper-parameters ////////
-	double B = 1.3;
+	double B = 1.8;
 	// bm25
+	/*
+	for these weights:
+	double urlweight = 15;	double titleweight = 20;	double bodyweight = 5;	double headerweight = 15;	
+	double anchorweight = 20;
+	double burl=0.75;	double btitle=0.75;	double bheader=0.75;	double bbody=0.75;	double banchor=0.75;
+	double k1=1000;	double pageRankLambda=4;	double pageRankLambdaPrime=0;
+	*/
 	// 1.0 --> 0.8172678063690284
 	// 1.1 --> 0.8186279498855178
 	// 1.2 --> 
-	// 1.3 --> 0.8210079834752704 *
-	// 1.4 --> 0.821231077485018
+	// 1.3 --> 0.8210079834752704 
+	// 1.4 --> 0.821231077485018 *
 	// 1.5 --> 0.8211871279652254
 	// 2.0 --> 0.819763972299397
 	// 2.1 --> 0.819033141772585
@@ -37,6 +44,12 @@ public class SmallestWindowScorer extends CosineSimilarityScorer {
 	// 3.5 --> 0.8187255438741172
 
 	// cosine similarity
+	/*
+	for these weights: 
+		 
+	double urlweight = 15;	double titleweight = 30;	double bodyweight = 10;	double headerweight = 25;
+	double anchorweight = 30;	double smoothingBodyLength = 2000.0;
+	 */
 	// 1.0 --> 0.8362797213208841
 	// 1.5 --> 0.8382538956227988
 	// 1.6 --> 0.8381542314536609
