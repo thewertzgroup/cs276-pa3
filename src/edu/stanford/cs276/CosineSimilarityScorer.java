@@ -27,7 +27,7 @@ public class CosineSimilarityScorer extends AScorer {
 	}
 
 	/////////////// Weights //////////////////
-	static Map<String, Double> weights;
+	static public Map<String, Double> weights;
 	static {
 		weights = new HashMap<>();
 		weights.put("url", 1.0);

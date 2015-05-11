@@ -64,7 +64,8 @@ public class NdcgMain {
 			totalSum = getNdcgQuery(rels, totalSum);
 		}
 		
-		System.out.println(totalSum/totalQueries);
+//TODO:		System.out.println(totalSum/totalQueries);
+System.out.print(totalSum/totalQueries);
 	}
 
 	private static double getNdcgQuery(ArrayList<Double> rels, double totalSum) {

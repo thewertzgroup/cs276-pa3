@@ -20,32 +20,49 @@ public abstract class AScorer {
 	Map<String,Double> idfs; // Map: term -> idf
 	
     // Various types of term frequencies that you will need
-	String[] TFTYPES = {"url","title","body","header","anchor"};
+	static String[] TFTYPES = {"url","title","body","header","anchor"};
 	
 	public AScorer(Map<String,Double> idfs) {
 		this.idfs = idfs;
 	}
 	
-	public Set<String> tfTypePermutations()
+	public static Set<String> tfTypePermutations()
 	{
 		Set<String> perms = new HashSet<>();
 		
-		for (String t1 : TFTYPES)
-			for (String t2 : TFTYPES)
-				for (String t3 : TFTYPES)
-					for (String t4 : TFTYPES)
-						for (String t5 : TFTYPES)
-							perms.add(t1 + "," + t2 + "," + t3 + "," + t4 + "," + t5);
+		for (int i=0; i<TFTYPES.length; i++)
+		{
+			for (int j=0; j<TFTYPES.length; j++)
+			{
+				if (j == i) continue;
+				for (int k=0; k<TFTYPES.length; k++)
+				{
+					if (k == j || k == i) continue;
+					for (int l=0; l<TFTYPES.length; l++)
+					{
+						if (l == k || l == j || l == i) continue;
+						for (int m=0; m<TFTYPES.length; m++)
+						{
+							if (m == l || m == k || m == j || m == i) continue;
+							perms.add(TFTYPES[i] + "." + TFTYPES[j] + "." + TFTYPES[k] + "." + TFTYPES[l] + "." + TFTYPES[m]);
+						}
+
+					}
+
+				}
+
+			}
+		}
 		
 		return perms;
 	}
 	
-	public Map<String, Double> getPermWeights(String perm)
+	public static Map<String, Double> getPermWeights(String perm)
 	{
 		Map<String, Double> weights = new HashMap<>();
 		
 		double weight = 1.0;
-		for (String term : perm.split(","))
+		for (String term : perm.split("\\."))
 		{
 			weights.put(term, weight);
 			weight -= 0.2;
