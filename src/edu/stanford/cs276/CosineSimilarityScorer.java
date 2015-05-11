@@ -27,12 +27,22 @@ public class CosineSimilarityScorer extends AScorer {
 	}
 
 	/////////////// Weights //////////////////
-	double urlweight = -1;
-	double titleweight = -1;
-	double bodyweight = -1;
-	double headerweight = -1;
-	double anchorweight = -1;
-
+	static Map<String, Double> weights;
+	static {
+		weights = new HashMap<>();
+		weights.put("url", 1.0);
+		weights.put("title", 1.0);
+		weights.put("body", 1.0);
+		weights.put("header", 1.0);
+		weights.put("anchor", 1.0);
+	}
+/*
+	double urlweight = 1.0;
+	double titleweight = 1.0;
+	double bodyweight = 1.0;
+	double headerweight = 1.0;
+	double anchorweight = 1.0;
+*/
 	double smoothingBodyLength = 500; // Smoothing factor when the body length is 0.
 	//////////////////////////////////////////
 
@@ -41,7 +51,16 @@ public class CosineSimilarityScorer extends AScorer {
 		
 		/*
 		 * @//TODO : Your code here
-		 */
+		 */ 
+		// "url","title","body","header","anchor"
+
+		Map<String, Double> tfDoc = newVector(q);
+		for (String tftype : TFTYPES)
+		{
+			tfDoc = mergeVectors(q, tfDoc, multVector(weights.get(tftype), tfs.get(tftype)));
+		}
+		
+		score = dotVectors(tfDoc, tfQuery);
 		
 		return score;
 	}
@@ -52,6 +71,15 @@ public class CosineSimilarityScorer extends AScorer {
 		/*
 		 * @//TODO : Your code here
 		 */
+		Double factor = d.body_length + smoothingBodyLength;
+		
+		for (String tftype : TFTYPES)
+		{
+			for (String term : q.queryWords)
+			{
+				tfs.get(tftype).put(term, tfs.get(tftype).get(term) / factor);
+			}
+		}
 	}
 
 

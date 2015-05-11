@@ -51,7 +51,12 @@ public class Rank {
 					/*
 					 * @//TODO : Your code here
 					 */
-					return -1;
+					if (o1.getSecond() < o2.getSecond()) 
+						return -1; 
+					else if (o1.getSecond() > o2.getSecond()) 
+						return 1;
+					
+					return 0;
 				}	
 			});
 			

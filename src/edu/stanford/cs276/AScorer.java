@@ -127,7 +127,7 @@ public abstract class AScorer {
 		System.out.println();
 	}
 
-	private Map<String, Double> newVector(Query q) 
+	public Map<String, Double> newVector(Query q) 
 	{
 		Map<String, Double> vector = new HashMap<>();
 		
@@ -138,7 +138,7 @@ public abstract class AScorer {
 	}
 	
 	
-	private Map<String, Double> mergeVectors(Query q, Map<String,Double> vector1, Map<String,Double> vector2)
+	public Map<String, Double> mergeVectors(final Query q, final Map<String,Double> vector1, final Map<String,Double> vector2)
 	{
 		Map<String, Double> termFreq = new HashMap<>();
 		
@@ -149,6 +149,29 @@ public abstract class AScorer {
 		
 		return termFreq;
 	}
+	
+	public Map<String, Double> multVector(final double d, final Map<String,Double> vector)
+	{
+		Map<String, Double> termFreq = new HashMap<>();
+		
+		for (String term : vector.keySet())
+		{
+			termFreq.put(term, d * vector.get(term));
+		}
+		
+		return termFreq;
+	}
+	
+	public double dotVectors(Map<String, Double> tfDoc, Map<String, Double> tfQuery) 
+	{
+		double result = 0.0;
+		
+		for (String term : tfQuery.keySet()) result += tfDoc.get(term) * tfQuery.get(term);
+
+		return result;
+	}
+
+
 	
 	
 	private Map<String, Double> getTFTypeVector(Query q, String[] terms) 
