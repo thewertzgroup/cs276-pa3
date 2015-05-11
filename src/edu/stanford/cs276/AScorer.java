@@ -3,8 +3,10 @@ package edu.stanford.cs276;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * An abstract class for a scorer. Need to be extended by each specific implementation of scorers.
@@ -23,6 +25,35 @@ public abstract class AScorer {
 	public AScorer(Map<String,Double> idfs) {
 		this.idfs = idfs;
 	}
+	
+	public Set<String> tfTypePermutations()
+	{
+		Set<String> perms = new HashSet<>();
+		
+		for (String t1 : TFTYPES)
+			for (String t2 : TFTYPES)
+				for (String t3 : TFTYPES)
+					for (String t4 : TFTYPES)
+						for (String t5 : TFTYPES)
+							perms.add(t1 + "," + t2 + "," + t3 + "," + t4 + "," + t5);
+		
+		return perms;
+	}
+	
+	public Map<String, Double> getPermWeights(String perm)
+	{
+		Map<String, Double> weights = new HashMap<>();
+		
+		double weight = 1.0;
+		for (String term : perm.split(","))
+		{
+			weights.put(term, weight);
+			weight -= 0.2;
+		}
+
+		return weights;
+	}
+
 	
 	// Score each document for each query.
 	public abstract double getSimScore(Document d, Query q);
