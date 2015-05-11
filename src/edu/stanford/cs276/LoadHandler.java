@@ -3,6 +3,7 @@ package edu.stanford.cs276;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -15,6 +16,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * This class is used to 1) load training data from files; 2) build idf from data collections in PA1.
@@ -110,7 +112,7 @@ public class LoadHandler {
 	}
 	
 	// Build document frequencies and then serializes to file
-	public static Map<String,Double> buildDFs(String dataDir, String idfFile)
+	public static Map<String,Double> buildDFs(String dataDir, String idfFile) throws IOException
 	{
 		
 		// Get root directory
@@ -132,6 +134,63 @@ public class LoadHandler {
 		 * @//TODO : Your code here -- consult PA1 (will be a simplified version)
 		 */
 		
+		/* For each block */
+		for (File block : dirlist) {
+
+			File blockDir = new File(root, block.getName());
+			File[] filelist = blockDir.listFiles();
+			
+			/* For each file */
+			for (File file : filelist) {
+				Set<String> termSet = new HashSet<>();
+				
+				++totalDocCount;
+				String fileName = block.getName() + "/" + file.getName();
+				
+				BufferedReader reader = new BufferedReader(new FileReader(file));
+				String line;
+				while ((line = reader.readLine()) != null) {
+					String[] terms = line.trim().split("\\s+");
+					for (String term : terms) {
+						/*
+						 * Your code here
+						 */
+						if (!termSet.contains(term))
+						{
+							if (!termDocCount.keySet().contains(term))
+							{
+								termDocCount.put(term,  1.0);
+							}
+							else
+							{
+								termDocCount.put(term, termDocCount.get(term) + 1.0);
+							}
+							
+							termSet.add(term);
+						}						
+					}
+				}
+				reader.close();
+			}
+		}
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		System.out.println(totalDocCount);
 		
 		// Make idf using df
@@ -139,7 +198,13 @@ public class LoadHandler {
 			/*
 			 * @//TODO : Your code here
 			 */
+			Double df = termDocCount.get(term);
+			
+			termDocCount.put(term, Math.log( (double)totalDocCount / df ) );
+			
+			System.out.println(term + "\t" + termDocCount.get(term));
 		}
+		System.exit(0);
 		
 		
 		// Save to file

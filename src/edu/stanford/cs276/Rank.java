@@ -127,6 +127,12 @@ public class Rank {
 		/*
 		 * @//TODO : Your code here to handle idfs
 		 */
+		String dataDir = "../cs276-pa1/data/";
+		String idfFile = "2015.data/idfFile.idf";
+		if (null == (idfs = LoadHandler.loadDFs(idfFile)))
+		{
+			idfs = LoadHandler.buildDFs(dataDir, idfFile);
+		}
 
 		if (args.length < 2) {
 			System.err.println("Insufficient number of arguments: <queryDocTrainData path> taskType");
