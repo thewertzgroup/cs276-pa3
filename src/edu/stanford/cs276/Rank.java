@@ -152,10 +152,10 @@ public class Rank {
 		Map<Query,List<String>> queryRankings = score(queryDict, scoreType, idfs);
 		
 		// Print results and save them to file (This is not necessary)
-		/*
-		  String outputFilePath =  null;
-		  writeRankedResultsToFile(queryRankings,outputFilePath);
-		 */
+
+		// Write to file to use ndcg.java
+		String outputFilePath = "queryRankings.rk";
+		writeRankedResultsToFile(queryRankings, outputFilePath);
 		
 		// Print results
 		printRankedResults(queryRankings);
