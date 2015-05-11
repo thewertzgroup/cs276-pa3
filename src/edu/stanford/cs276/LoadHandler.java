@@ -105,7 +105,7 @@ public class LoadHandler {
 			fis.close();
 		}
 		catch(IOException | ClassNotFoundException ioe) {
-			ioe.printStackTrace();
+			//ioe.printStackTrace();
 			return null;
 		}
 		return termDocCount;
@@ -173,39 +173,23 @@ public class LoadHandler {
 				reader.close();
 			}
 		}
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
+				
 		System.out.println(totalDocCount);
 		
 		// Make idf using df
 		for (String term : termDocCount.keySet()) {
 			/*
-			 * @//TODO : Your code here
+			 * @//TODO : Your code here.  ADD LaPlace +1 smoothing.
 			 */
 			Double df = termDocCount.get(term);
 			
-			termDocCount.put(term, Math.log( (double)totalDocCount / df ) );
+			termDocCount.put(term, Math.log( ((double)totalDocCount + 1.0) / (df + 1.0) ) );
 			
-			System.out.println(term + "\t" + termDocCount.get(term));
+			//System.out.println(term + "\t" + termDocCount.get(term));
 		}
-		System.exit(0);
 		
+		// idf for missing terms:
+		termDocCount.put(AScorer.IDF_MAX, Math.log( ((double)totalDocCount + 1.0) / 1.0 ));
 		
 		// Save to file
 		try {

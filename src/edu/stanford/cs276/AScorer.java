@@ -11,7 +11,10 @@ import java.util.Map;
  */
 public abstract class AScorer {
 	
+	public static String IDF_MAX = "###IDF_MAX###";
+
 	Map<String,Double> idfs; // Map: term -> idf
+	
     // Various types of term frequencies that you will need
 	String[] TFTYPES = {"url","title","body","header","anchor"};
 	
