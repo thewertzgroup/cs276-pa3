@@ -269,8 +269,8 @@ public class BM25Scorer extends AScorer {
 
 
 	@Override
-	public double getSimScore(Document d, Query q) {
-		
+	public double getSimScore(Document d, Query q) 
+	{		
 		Map<String,Map<String, Double>> tfs = this.getDocTermFreqs(d,q);
 		
 		this.normalizeTFs(tfs, d, q);

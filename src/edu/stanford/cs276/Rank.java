@@ -135,12 +135,12 @@ public class Rank {
 		File idfFileInstance = new File(idfFile);
 		if (idfFileInstance.exists())
 		{ 
-			System.out.println("loading...");
+	//		System.out.println("loading...");
 			idfs = LoadHandler.loadDFs(idfFile);
 		} 
 		else
 		{ 
-			System.out.println("building...");
+	//		System.out.println("building...");
 			idfs = LoadHandler.buildDFs(dataDir, idfFile);
 		} 
 		
@@ -168,6 +168,7 @@ public class Rank {
 		}
 		
 		// Score documents for queries
+		
 		Map<Query,List<String>> queryRankings = score(queryDict, scoreType, idfs);
 		
 		// Print results and save them to file (This is not necessary)
