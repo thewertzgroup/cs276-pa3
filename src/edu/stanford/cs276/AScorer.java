@@ -11,6 +11,8 @@ import java.util.Map;
  */
 public abstract class AScorer {
 	
+	private static boolean debug = false;
+	
 	public static String IDF_MAX = "###IDF_MAX###";
 
 	Map<String,Double> idfs; // Map: term -> idf
@@ -69,11 +71,14 @@ public abstract class AScorer {
 		tfs.put("title", getTFTypeVector(q, d.title.split("\\s+")));
 		
 		Map<String, Double> termFreq = newVector(q);
-		for (String term : d.body_hits.keySet())
+		if (null != d.body_hits)
 		{
-			if (q.queryWords.contains(term))
+			for (String term : d.body_hits.keySet())
 			{
-				termFreq.put(term, (double)d.body_hits.get(term).size());
+				if (q.queryWords.contains(term))
+				{
+					termFreq.put(term, (double)d.body_hits.get(term).size());
+				}
 			}
 		}
 		tfs.put("body", termFreq);
@@ -108,10 +113,20 @@ public abstract class AScorer {
 			 */
 			
 		}
+		
 		return tfs;
 	}
 	
 	
+	public void debugTFS(Document d, Query q, Map<String, Map<String, Double>> tfs, Map<String, Double> tfQuery) 
+	{
+		System.out.println(q);
+		System.out.println(d);
+		System.out.println("query: " + tfQuery);
+		for (String tftype : TFTYPES) System.out.println(tftype + ": " + tfs.get(tftype));
+		System.out.println();
+	}
+
 	private Map<String, Double> newVector(Query q) 
 	{
 		Map<String, Double> vector = new HashMap<>();

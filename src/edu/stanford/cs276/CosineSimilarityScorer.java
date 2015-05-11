@@ -19,6 +19,8 @@ import java.util.Set;
  * Skeleton code for the implementation of a Cosine Similarity Scorer in Task 1.
  */
 public class CosineSimilarityScorer extends AScorer {
+	
+	private static boolean debug = false;
 
 	public CosineSimilarityScorer(Map<String,Double> idfs) {
 		super(idfs);
@@ -31,7 +33,7 @@ public class CosineSimilarityScorer extends AScorer {
 	double headerweight = -1;
 	double anchorweight = -1;
 
-	double smoothingBodyLength = -1; // Smoothing factor when the body length is 0.
+	double smoothingBodyLength = 500; // Smoothing factor when the body length is 0.
 	//////////////////////////////////////////
 
 	public double getNetScore(Map<String, Map<String, Double>> tfs, Query q, Map<String,Double> tfQuery, Document d) {
@@ -61,6 +63,8 @@ public class CosineSimilarityScorer extends AScorer {
 		this.normalizeTFs(tfs, d, q);
 		
 		Map<String,Double> tfQuery = getQueryFreqs(q);
+		
+		if (debug) debugTFS(d, q, tfs, tfQuery);
 
 	    return getNetScore(tfs,q,tfQuery,d);
 	}
