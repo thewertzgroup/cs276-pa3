@@ -19,12 +19,22 @@ public class BM25Scorer extends AScorer {
 
 
 	/////////////// Weights /////////////////
+	static public Map<String, Double> weights;
+	static {
+		weights = new HashMap<>();
+		weights.put("url", 1.0);
+		weights.put("title", 1.0);
+		weights.put("body", 1.0);
+		weights.put("header", 1.0);
+		weights.put("anchor", 1.0);
+	}
+/*
 	double urlweight = -1;
 	double titleweight  = -1;
 	double bodyweight = -1;
 	double headerweight = -1;
 	double anchorweight = -1;
-
+*/
 	/////// BM25 specific weights ///////////
 	double burl=-1;
 	double btitle=-1;
@@ -54,6 +64,32 @@ public class BM25Scorer extends AScorer {
 		/*
 		 * @//TODO : Your code here
 		 */
+		
+		for (String tftype : TFTYPES) { avgLengths.put("tftype", 0.0); }
+		
+		for (Query query : queryDict.keySet())
+		{
+			for (String url : queryDict.get(query).keySet())
+			{
+				Document d = queryDict.get(query).get(url);
+				
+				// "url","title","body","header","anchor"
+				avgLengths.put("url", avgLengths.get("url") + getURLTerms(d).length);
+				avgLengths.put("title", avgLengths.get("title") + getTitleTerms(d).length);
+				for (String term : d.body_hits.keySet())
+				{
+					avgLengths.put("body", avgLengths.get("body") + (double)d.body_hits.get(term).size());
+				}
+				for (String header : d.headers)
+				{
+					avgLengths.put("header", avgLengths.get("header") + getHeaderTerms(header).length);
+				}
+				for (String anchor : d.anchors.keySet())
+				{
+					avgLengths.put("anchor", avgLengths.get("anchor") + getAnchorTerms(anchor).length * d.anchors.get(anchor));
+				}
+			}
+		}
 		
 		//normalize avgLengths
 		for (String tfType : this.TFTYPES) {

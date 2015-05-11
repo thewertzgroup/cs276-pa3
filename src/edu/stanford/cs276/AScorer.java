@@ -115,8 +115,8 @@ public abstract class AScorer {
 		 */
 		// "url","title","body","header","anchor"
 		
-		tfs.put("url", getTFTypeVector(q, d.url.split("[^a-zA-Z0-9']")));
-		tfs.put("title", getTFTypeVector(q, d.title.split("\\s+")));
+		tfs.put("url", getTFTypeVector(q, getURLTerms(d)));
+		tfs.put("title", getTFTypeVector(q, getTitleTerms(d)));
 		
 		Map<String, Double> termFreq = newVector(q);
 		if (null != d.body_hits)
@@ -136,7 +136,7 @@ public abstract class AScorer {
 		{
 			for (String header : d.headers)
 			{
-				headers.addAll(new ArrayList<String>(Arrays.asList(header.split("\\s+"))));
+				headers.addAll(new ArrayList<String>(Arrays.asList(getHeaderTerms(header))));
 			}
 		}
 		String[] headerArray = new String[headers.size()];
@@ -147,7 +147,7 @@ public abstract class AScorer {
 		{
 			for (String anchor : d.anchors.keySet())
 			{
-				termFreq = mergeVectors(q, termFreq, getTFTypeVector(q, anchor.split("\\s+"), (double)d.anchors.get(anchor)));
+				termFreq = mergeVectors(q, termFreq, getTFTypeVector(q, getAnchorTerms(anchor), (double)d.anchors.get(anchor)));
 			}
 		}
 		tfs.put("anchor", termFreq);
@@ -163,6 +163,30 @@ public abstract class AScorer {
 		}
 		
 		return tfs;
+	}
+	
+	
+	// "url","title","body","header","anchor"
+	
+	public String[] getURLTerms(Document d)
+	{
+		return d.url.split("[^a-zA-Z0-9']");
+	}
+	
+	
+	public String[] getTitleTerms(Document d)
+	{
+		return d.title.split("\\s+");
+	}
+	
+	public String[] getHeaderTerms(String h)
+	{
+		return h.split("\\s+");
+	}
+	
+	public String[] getAnchorTerms(String a)
+	{
+		return a.split("\\s+");
 	}
 	
 	
