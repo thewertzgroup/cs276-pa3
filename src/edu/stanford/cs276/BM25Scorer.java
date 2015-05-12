@@ -9,6 +9,9 @@ import java.util.Map;
  * Skeleton code for the implementation of a BM25 Scorer in Task 2.
  */
 public class BM25Scorer extends AScorer {
+	
+	private static boolean debug = true;
+	
 	Map<Query,Map<String, Document>> queryDict; // query -> url -> document
 
 	public BM25Scorer(Map<String,Double> idfs, Map<Query,Map<String, Document>> queryDict) {
@@ -65,37 +68,75 @@ public class BM25Scorer extends AScorer {
 		 * @//TODO : Your code here
 		 */
 		
-		for (String tftype : TFTYPES) { avgLengths.put("tftype", 0.0); }
+		for (String tftype : TFTYPES) { avgLengths.put(tftype, 0.0); }
+		
+		int docCount = 0;
+		int length = 0;
 		
 		for (Query query : queryDict.keySet())
 		{
 			for (String url : queryDict.get(query).keySet())
 			{
+				HashMap<String, Double> docLengths = new HashMap<>();
+
 				Document d = queryDict.get(query).get(url);
+				docCount++;
+				
+				if (debug) System.out.println(d);
 				
 				// "url","title","body","header","anchor"
-				avgLengths.put("url", avgLengths.get("url") + getURLTerms(d).length);
-				avgLengths.put("title", avgLengths.get("title") + getTitleTerms(d).length);
-				for (String term : d.body_hits.keySet())
+				length = getURLTerms(d).length;
+				docLengths.put("url", (double)length);
+				avgLengths.put("url", avgLengths.get("url") + length);
+				
+				length = getTitleTerms(d).length;
+				docLengths.put("title", (double)length);
+				avgLengths.put("title", avgLengths.get("title") + length);
+				
+				docLengths.put("body",  0.0);
+				if (null != d.body_hits)
 				{
-					avgLengths.put("body", avgLengths.get("body") + (double)d.body_hits.get(term).size());
+					for (String term : d.body_hits.keySet())
+					{
+						length = d.body_hits.get(term).size();
+						docLengths.put("body", docLengths.get("body") + length);
+						avgLengths.put("body", avgLengths.get("body") + length);
+					}
 				}
-				for (String header : d.headers)
+				
+				docLengths.put("header", 0.0);
+				if (null != d.headers)
 				{
-					avgLengths.put("header", avgLengths.get("header") + getHeaderTerms(header).length);
+					for (String header : d.headers)
+					{
+						length = getHeaderTerms(header).length;
+						docLengths.put("header", docLengths.get("header") + length);
+						avgLengths.put("header", avgLengths.get("header") + length);
+					}
 				}
-				for (String anchor : d.anchors.keySet())
+				
+				docLengths.put("anchor",  0.0);
+				if (null != d.anchors)
 				{
-					avgLengths.put("anchor", avgLengths.get("anchor") + getAnchorTerms(anchor).length * d.anchors.get(anchor));
+					for (String anchor : d.anchors.keySet())
+					{
+						length = getAnchorTerms(anchor).length * d.anchors.get(anchor);
+						docLengths.put("anchor", docLengths.get("anchor") + length);
+						avgLengths.put("anchor", avgLengths.get("anchor") + length);
+					}
 				}
+				
+				lengths.put(d, docLengths);
+				pagerankScores.put(d, (double)d.page_rank);
 			}
 		}
 		
 		//normalize avgLengths
-		for (String tfType : this.TFTYPES) {
+		for (String tftype : this.TFTYPES) {
 			/*
 			 * @//TODO : Your code here
 			 */
+			avgLengths.put(tftype, avgLengths.get(tftype) / (double)docCount);
 		}
 
 	}
