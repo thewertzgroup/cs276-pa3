@@ -159,22 +159,22 @@ public class Rank {
 			e.printStackTrace();
 		}
 		
-//		for (String permutation : AScorer.tfTypePermutations())
-//		{
+/*		for (String permutation : AScorer.tfTypePermutations())
+		{
 		
-//			CosineSimilarityScorer.weights = AScorer.getPermWeights(permutation);
-			
+			CosineSimilarityScorer.weights = AScorer.getPermWeights(permutation);
+*/			
 			// Score documents for queries
 			Map<Query,List<String>> queryRankings = score(queryDict, scoreType, idfs);
 			
 			// Print results and save them to file (This is not necessary)
 	
 			// Write to file to use ndcg.java
-//			String outputFilePath = "queryRankings.rk" + "." + permutation;
-			String outputFilePath = "queryRankings.rk";
+/*			String outputFilePath = "queryRankings.rk" + "." + permutation;
+*/			String outputFilePath = "queryRankings.rk";
 			writeRankedResultsToFile(queryRankings, outputFilePath);
-//		}
-		
+/*		}
+*/		
 		// Print results
 		//printRankedResults(queryRankings);
 	}
