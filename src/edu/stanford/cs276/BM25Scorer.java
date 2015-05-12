@@ -2,15 +2,17 @@ package edu.stanford.cs276;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Skeleton code for the implementation of a BM25 Scorer in Task 2.
  */
 public class BM25Scorer extends AScorer {
 	
-	private static boolean debug = true;
+	private static boolean debug = false;
 	
 	Map<Query,Map<String, Document>> queryDict; // query -> url -> document
 
@@ -39,14 +41,15 @@ public class BM25Scorer extends AScorer {
 	double anchorweight = -1;
 */
 	/////// BM25 specific weights ///////////
+	// title.url.anchor.body.header
 	static public Map<String, Double> B;
 	static {
 		B = new HashMap<>();
-		B.put("url", 1.0);
-		B.put("title", 0.8);
+		B.put("url", 0.8);
+		B.put("title", 1.0);
 		B.put("body", 0.4);
-		B.put("header", 0.6);
-		B.put("anchor", 0.2);
+		B.put("header", 0.2);
+		B.put("anchor", 0.6);
 	}
 /*	
 	double burl=-1;
@@ -55,9 +58,11 @@ public class BM25Scorer extends AScorer {
 	double bbody=-1;
 	double banchor=-1;
 */
-	double k1 = 0.5;
-	double pageRankLambda = 0.5;
-	double pageRankLambdaPrime = 0.5;
+	static String[] PARAMS = {"k1","pageRankLambda","pageRankLambdaPrime"};
+
+	public static double k1 = 0.5;
+	public static double pageRankLambda = 0.5;
+	public static double pageRankLambdaPrime = 0.5;
 	//////////////////////////////////////////
 
 	/////// BM25 data structures - feel free to modify ///////
@@ -67,6 +72,28 @@ public class BM25Scorer extends AScorer {
 	Map<Document,Double> pagerankScores; // Document -> pagerank score
 
 	//////////////////////////////////////////
+	
+	public static Set<String> paramPermutations()
+	{
+		Set<String> perms = new HashSet<>();
+		
+		for (int i=0; i<PARAMS.length; i++)
+		{
+			for (int j=0; j<PARAMS.length; j++)
+			{
+				if (j == i) continue;
+				for (int k=0; k<PARAMS.length; k++)
+				{
+					if (k == j || k == i) continue;
+					perms.add(TFTYPES[i] + "." + TFTYPES[j] + "." + TFTYPES[k]);
+				}
+
+			}
+		}
+		
+		return perms;
+	}
+
 
 	// Set up average lengths for bm25, also handles pagerank
 	public void calcAverageLengths() {

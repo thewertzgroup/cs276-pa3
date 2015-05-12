@@ -159,10 +159,19 @@ public class Rank {
 			e.printStackTrace();
 		}
 		
+for(double i=1.0; i<=5.0; i+=0.1)
+{
+//for(double j=0.0; j<=1.0; j+=0.1)
+//{
+//for(double k=0.0; k<=1.0; k+=0.1)
+//{
+BM25Scorer.k1 = i; BM25Scorer.pageRankLambda = 1.0; BM25Scorer.pageRankLambdaPrime = 0.1;
+
 /*		for (String permutation : AScorer.tfTypePermutations())
 		{
 		
 			CosineSimilarityScorer.weights = AScorer.getPermWeights(permutation);
+			BM25Scorer.B = AScorer.getPermWeights(permutation);
 */			
 			// Score documents for queries
 			Map<Query,List<String>> queryRankings = score(queryDict, scoreType, idfs);
@@ -170,11 +179,15 @@ public class Rank {
 			// Print results and save them to file (This is not necessary)
 	
 			// Write to file to use ndcg.java
-/*			String outputFilePath = "queryRankings.rk" + "." + permutation;
-*/			String outputFilePath = "queryRankings.rk";
+			String outputFilePath = "queryRankings.rk" + "." + "k1." + BM25Scorer.k1 + ".L." + BM25Scorer.pageRankLambda + ".LPrime." + BM25Scorer.pageRankLambdaPrime ;
+//			String outputFilePath = "queryRankings.rk" + "." + permutation;
+//			String outputFilePath = "queryRankings.rk";
 			writeRankedResultsToFile(queryRankings, outputFilePath);
 /*		}
 */		
+//}
+//}
+}
 		// Print results
 		//printRankedResults(queryRankings);
 	}
