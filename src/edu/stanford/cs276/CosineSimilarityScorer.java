@@ -31,10 +31,10 @@ public class CosineSimilarityScorer extends AScorer {
 	static {
 		weights = new HashMap<>();
 		weights.put("url", 1.0);
-		weights.put("title", 1.0);
-		weights.put("body", 1.0);
-		weights.put("header", 1.0);
-		weights.put("anchor", 1.0);
+		weights.put("title", 0.8);
+		weights.put("body", 0.4);
+		weights.put("header", 0.6);
+		weights.put("anchor", 0.2);
 	}
 /*
 	double urlweight = 1.0;
