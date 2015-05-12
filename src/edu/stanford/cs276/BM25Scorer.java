@@ -26,10 +26,10 @@ public class BM25Scorer extends AScorer {
 	static {
 		weights = new HashMap<>();
 		weights.put("url", 1.0);
-		weights.put("title", 1.0);
-		weights.put("body", 1.0);
-		weights.put("header", 1.0);
-		weights.put("anchor", 1.0);
+		weights.put("title", 0.8);
+		weights.put("body", 0.4);
+		weights.put("header", 0.6);
+		weights.put("anchor", 0.2);
 	}
 /*
 	double urlweight = -1;
@@ -39,15 +39,25 @@ public class BM25Scorer extends AScorer {
 	double anchorweight = -1;
 */
 	/////// BM25 specific weights ///////////
+	static public Map<String, Double> B;
+	static {
+		B = new HashMap<>();
+		B.put("url", 1.0);
+		B.put("title", 0.8);
+		B.put("body", 0.4);
+		B.put("header", 0.6);
+		B.put("anchor", 0.2);
+	}
+/*	
 	double burl=-1;
 	double btitle=-1;
 	double bheader=-1;
 	double bbody=-1;
 	double banchor=-1;
-
-	double k1=-1;
-	double pageRankLambda=-1;
-	double pageRankLambdaPrime=-1;
+*/
+	double k1 = 0.5;
+	double pageRankLambda = 0.5;
+	double pageRankLambdaPrime = 0.5;
 	//////////////////////////////////////////
 
 	/////// BM25 data structures - feel free to modify ///////
@@ -150,6 +160,35 @@ public class BM25Scorer extends AScorer {
 		/*
 		 * @//TODO : Your code here
 		 */
+		for (String term : q.queryWords)
+		{
+			double w_dt = 0.0;
+			for (String tftype : TFTYPES) 
+			{
+				w_dt += weights.get(tftype) * tfs.get(tftype).get(term);
+			}
+			double idf_t = (null == idfs.get(term)) ? idfs.get(IDF_MAX) : idfs.get(term);
+			
+			score += ( w_dt / (k1 + w_dt) ) * idf_t;
+		}
+		score += pageRankLambda * V_j(pagerankScores.get(d));
+		
+		return score;
+	}
+	
+	private double V_j(Double f)
+	{
+		double score = 0.0;
+		// Choose log/saturation/sigmoid function
+		
+		// log
+		score = Math.log(pageRankLambdaPrime + f);
+		
+		// saturation
+		// score = f / (pageRankLambdaPrime + f);
+		
+		// sigmoid - do not have second derivative
+		// score = 1 / (pageRankLambdaPrime + Math.exp(-f * pageRankLambdaPrimePrime));
 		
 		return score;
 	}
@@ -159,6 +198,24 @@ public class BM25Scorer extends AScorer {
 		/*
 		 * @//TODO : Your code here
 		 */
+		if (debug) System.out.println(tfs);
+		
+		for (String tftype : TFTYPES) 
+		{ 
+			for (String term : q.queryWords)
+			{
+				double tf_dft  = tfs.get(tftype).get(term);
+				double len_df  = lengths.get(d).get(tftype);
+				double avlen_f = avgLengths.get(tftype);
+				double B_f = B.get(tftype);
+				
+				double ftf_dft = avlen_f == 0.0 ? 0.0 : tf_dft / ( 1 + B_f * ( (len_df / avlen_f) - 1 ));
+				
+				tfs.get(tftype).put(term, ftf_dft);
+			}
+		}
+		
+		if (debug) System.out.println(tfs);
 	}
 
 
