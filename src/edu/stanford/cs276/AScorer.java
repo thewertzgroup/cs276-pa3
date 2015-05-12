@@ -83,8 +83,15 @@ public abstract class AScorer {
 		 * @//TODO : Your code here
 		 */
 		for (String term : q.queryWords)
-		{
+		{			
 			tfQuery.put(term,  tfQuery.get(term) + 1.0);
+		}
+		for (String term : tfQuery.keySet())
+		{
+			Double idf = idfs.get(term);
+			if (null == idf) idf = idfs.get(IDF_MAX);
+
+			tfQuery.put(term, idf * tfQuery.get(term));
 		}
 		
 		return tfQuery;
