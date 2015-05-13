@@ -22,7 +22,7 @@ import edu.stanford.cs276.util.Pair;
 public class SmallestWindowScorer extends CosineSimilarityScorer {
 
 	/////// Smallest window specific hyper-parameters ////////
-	double B = 1.8;
+	double B = 2;
 	// bm25
 	/*
 	for these weights:
@@ -59,7 +59,7 @@ public class SmallestWindowScorer extends CosineSimilarityScorer {
 	// 2.0 --> 0.8384153586767213  
 	// 2.1 --> 0.8384114042843523
 	// 2.5 --> 0.8378363859107839
-	double boostmod = -1;
+	//double boostmod = -1;
 
 	//////////////////////////////
 	
@@ -69,6 +69,13 @@ public class SmallestWindowScorer extends CosineSimilarityScorer {
 	Map<Query,Map<String, Document>> queryDict; // query -> url -> document
 	public SmallestWindowScorer(Map<String, Double> idfs, Map<Query,Map<String, Document>> queryDict) {
 		super(idfs);
+		this.urlweight = 0.8; 
+		this.titleweight = 0.8;
+		this.headerweight =  0.6; 
+		this.bodyweight = 0.4; 
+		this.anchorweight = 0.2; 
+		this.smoothingBodyLength = 500; 
+
 		this.queryDict = queryDict;
 		handleSmallestWindow();
 	}
@@ -263,7 +270,7 @@ public class SmallestWindowScorer extends CosineSimilarityScorer {
 			return newSmallestWindow; 
 	}
 	
-	public double computeBoost(Query q, double smallestWindow)
+	public double computeBoostExp(Query q, double smallestWindow)
 	{ 
 		double boost= 1;
 		if(smallestWindow>0 )
@@ -275,6 +282,16 @@ public class SmallestWindowScorer extends CosineSimilarityScorer {
 		return boost; 
 	}
 	
+	public double computeBoost1Overx(Query q, double smallestWindow)
+	{ 
+		double boost= 1;
+		if(smallestWindow>0 )
+		{ 
+			Set<String> uniqueQueryWords = new HashSet<String>(q.queryWords);
+			boost = 1+ (double)((B-1)*uniqueQueryWords.size()) /smallestWindow;			
+		} 
+		return boost; 
+	}
 	@Override
 	public double getSimScore(Document d, Query q) {
 		double score = 0; 
@@ -289,7 +306,7 @@ public class SmallestWindowScorer extends CosineSimilarityScorer {
 	    
 		// applying the boosting based on the smallest window, 			
 		double smallestWindow = docQuerySmallestWindow.get(new Pair<Document, Query>(d, q));
-		double boost = computeBoost(q, smallestWindow);
+		double boost = computeBoostExp(q, smallestWindow);
 	//	if(boost!=1)
 	//		System.out.println(numBoosts++); 
 		return score*boost; 

@@ -17,22 +17,21 @@ public class Rank {
 	/**
 	 * Call this function to score and rank documents for some queries, using a specified scoring function.
 	 */
-	private static Map<Query,List<String>> score(Map<Query,Map<String, Document>> queryDict, String scoreType,
-			Map<String,Double> idfs) {
+	private static Map<Query,List<String>> score(Map<Query,Map<String, Document>> queryDict, String scoreType, Map<String,Double> idfs) {
 		AScorer scorer = null;
 		if (scoreType.equals("baseline"))
 			scorer = new BaselineScorer();
 		else if (scoreType.equals("cosine"))
-			scorer = new CosineSimilarityScorer(idfs);
+			scorer = new CosineSimilarityScorer(idfs);			
 		else if (scoreType.equals("bm25"))
-			scorer = new BM25Scorer(idfs,queryDict);
+			scorer = new BM25Scorer(idfs,queryDict);			 
 		else if (scoreType.equals("window"))
 			// Feel free to change this to match your cosine scorer if you choose to build on top of that instead
-			scorer = new SmallestWindowScorer(idfs,queryDict);
+			scorer = new SmallestWindowScorer(idfs,queryDict);			
 		else if (scoreType.equals("extra"))
 			scorer = new ExtraCreditScorer(idfs);
 		
-
+		
 		// Put completed rankings here
 		Map<Query,List<String>> queryRankings = new HashMap<Query,List<String>>();
 		
@@ -121,7 +120,8 @@ public class Rank {
 			e.printStackTrace();
 		}
 	}
-
+	
+	
 	public static void main(String[] args) throws IOException {
 
 		// To store the idfs for different words in the collection
@@ -130,7 +130,8 @@ public class Rank {
 		/*
 		 * @//TODO : Your code here to handle idfs
 		 */
-		String dataDir = "2015.data"; 
+	//	String dataDir = "C:/Users/Maha/Documents/MassiveDataProgram/CS276/problemAssignments/PA1/cs276-pa1/data"; 
+		String dataDir = "2015.data/";
 		String idfFile = "2015.data/idfFile.idf";
 		File idfFileInstance = new File(idfFile);
 		if (idfFileInstance.exists())
@@ -157,6 +158,7 @@ public class Rank {
 				|| scoreType.equals("extra") || scoreType.equals("window"))) {
 			System.err.println("Invalid scoring type; should be either 'baseline', 'bm25', 'cosine', 'window', or 'extra'");
 		}
+				
 			
 		Map<Query,Map<String, Document>> queryDict=null;
 		
@@ -166,11 +168,9 @@ public class Rank {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		// Score documents for queries
-		
-		Map<Query,List<String>> queryRankings = score(queryDict, scoreType, idfs);
-		
+		 																	
+		Map<Query,List<String>> queryRankings = score(queryDict, scoreType, idfs); 
+
 		// Print results and save them to file (This is not necessary)
 		/*
 		  String outputFilePath =  null;
@@ -180,8 +180,14 @@ public class Rank {
 		// Print results
 		printRankedResults(queryRankings);
 		
-		//write to file to use ndcg.java
-		String outputFilePath = "queryRankings.rk";
-		writeRankedResultsToFile(queryRankings, outputFilePath);
+	//	//write to file to use ndcg.java
+	//	String outputFilePath = "queryRankings.rk";
+	//	writeRankedResultsToFile(queryRankings, outputFilePath);
+																				
+									
+									
+				
+
+
 	}
 }

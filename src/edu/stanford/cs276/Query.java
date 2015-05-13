@@ -12,7 +12,7 @@ public class Query {
 	List<String> queryWords;
 	
 	public Query(String query) {
-		queryWords = new ArrayList<String>(Arrays.asList(query.split(" ")));
+		queryWords = new ArrayList<String>(Arrays.asList(query.toLowerCase().split(" ")));
 	}
 	
 	

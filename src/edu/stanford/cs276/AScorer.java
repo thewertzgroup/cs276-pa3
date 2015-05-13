@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * An abstract class for a scorer. Need to be extended by each specific implementation of scorers.
@@ -93,7 +95,8 @@ public abstract class AScorer {
 		if(title!=null)
 		{ 
 			String[] titleTerms;
-			titleTerms = title.toLowerCase().split("\\+");// splitting on space		
+		//	titleTerms = title.toLowerCase().split("\\+");// splitting on space that was a bug, I must split on \\s+		
+			titleTerms = title.toLowerCase().split(" ");// splitting on space
 			return Arrays.asList(titleTerms); 			
 		} 
 		
@@ -113,7 +116,8 @@ public abstract class AScorer {
 			for(int headerInd = 0; headerInd < headers.size(); headerInd++)		
 				allHeaders = allHeaders + " " + headers.get(headerInd).trim().toLowerCase();  
 			} 
-		String[] headersTerms = allHeaders.split("\\+");// splitting on space
+	//	String[] headersTerms = allHeaders.split("\\+");// splitting on space
+		String[] headersTerms = allHeaders.split(" ");// splitting on space
 
 		return Arrays.asList(headersTerms); 
 	}
@@ -129,7 +133,8 @@ public abstract class AScorer {
 			for(String anchor: anchors.keySet())	
 			{ 
 				anchor_freq  = anchors.get(anchor); 
-				anchorTerms = Arrays.asList(anchor.toLowerCase().split("\\+"));// splitting on space
+			//	anchorTerms = Arrays.asList(anchor.toLowerCase().split("\\+"));// splitting on space
+				anchorTerms = Arrays.asList(anchor.toLowerCase().split(" "));// splitting on space
 				
 				anchorTermsMul.put(anchorTerms, anchor_freq); 												
 			}			
@@ -138,7 +143,8 @@ public abstract class AScorer {
 		else 			
 			{ 			
 				String dumAnchor = "";		
-				anchorTerms = Arrays.asList(dumAnchor.split("\\+"));// splitting on space
+			//	anchorTerms = Arrays.asList(dumAnchor.split("\\+"));// splitting on space
+				anchorTerms = Arrays.asList(dumAnchor.split(" "));// splitting on space
 				anchorTermsMul.put(anchorTerms, 0); 	
 			} 
 			
@@ -148,7 +154,7 @@ public abstract class AScorer {
 	Map<String, Double> getAnchorsTFS(Map<String, Integer> anchors, Query q)
 	{
 		Map<String, Double> tf_anchor = new HashMap<String, Double>();
-		String key; 
+		
 		if(anchors!=null)
 		{ 
 			List<String> anchorTerms;
@@ -158,15 +164,15 @@ public abstract class AScorer {
 			for(String anchor: anchors.keySet())	
 			{ 
 				anchor_freq  = anchors.get(anchor); 
-				anchorTerms = Arrays.asList(anchor.toLowerCase().split("\\+"));// splitting on space			 
-			
-				for(int queryTInd = 0; queryTInd < q.queryWords.size(); queryTInd++)
-				{ 			
-					key = q.queryWords.get(queryTInd); 
-					freq = (double) Collections.frequency(anchorTerms, key)*anchor_freq;
-					if(tf_anchor.containsKey(key))
-						freq += tf_anchor.get(key); 
-					tf_anchor.put(key, freq); 					
+			//	anchorTerms = Arrays.asList(anchor.toLowerCase().split("\\+"));// splitting on space			 
+				anchorTerms = Arrays.asList(anchor.toLowerCase().split(" "));// splitting on space
+				Set<String> uniqueQueryWords = new HashSet<String>(q.queryWords);
+				for(String term: uniqueQueryWords)
+				{ 								
+					freq = (double) Collections.frequency(anchorTerms, term)*anchor_freq;
+					if(tf_anchor.containsKey(term))
+						freq += tf_anchor.get(term); 
+					tf_anchor.put(term, freq); 					
 				}
 					
 				}			
@@ -174,7 +180,8 @@ public abstract class AScorer {
 		} 
 		else 
 			for(int queryTInd = 0; queryTInd < q.queryWords.size(); queryTInd++)
-			{ 			
+			{ 		
+				String key; 
 				key = q.queryWords.get(queryTInd); 				 
 				tf_anchor.put(key, 0.0); 		
 			} 

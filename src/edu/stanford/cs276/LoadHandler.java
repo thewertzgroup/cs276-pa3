@@ -151,7 +151,8 @@ public class LoadHandler {
 				BufferedReader reader = new BufferedReader(new FileReader(file));
 				String line;
 				while ((line = reader.readLine()) != null) {
-					String[] tokens = line.trim().split("\\s+");
+				//	String[] tokens = line.trim().split("\\s+");
+					String[] tokens = line.trim().split(" ");
 					for (String token : tokens) {
 						
 						if(!termDocSet.containsKey(token)) // the term is new

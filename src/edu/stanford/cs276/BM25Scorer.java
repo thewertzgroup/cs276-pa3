@@ -9,32 +9,39 @@ import java.util.Map;
  */
 public class BM25Scorer extends AScorer {
 	Map<Query,Map<String, Document>> queryDict; // query -> url -> document
+	/////////////// Weights /////////////////
+	double urlweight = 1;
+	double titleweight = 0.8;
+	double headerweight = 0.6;
+	double bodyweight = 0.4;
+	double anchorweight = 0.2;
 
+	/////// BM25 specific weights ///////////
+	double burl=0.8;
+	double btitle=1;
+	double bheader=0.2;
+	double bbody=0.4;
+	double banchor=0.6;
+	
+/*	double burl=0.75;
+	double btitle=0.75;
+	double bheader=0.75;
+	double bbody=0.75;
+	double banchor=0.75;*/
+
+
+	double k1=1.7;
+	double pageRankLambda=1.0;
+	double pageRankLambdaPrime=0;
+	//////////////////////////////////////////
 	public BM25Scorer(Map<String,Double> idfs, Map<Query,Map<String, Document>> queryDict) {
 		super(idfs);
-		this.queryDict = queryDict;
+		this.queryDict = queryDict;						
 		this.calcAverageLengths();
 	}
 
 
-	/////////////// Weights /////////////////
-	double urlweight = 15;
-	double titleweight = 20;
-	double bodyweight = 5;
-	double headerweight = 15;
-	double anchorweight = 20;
 
-	/////// BM25 specific weights ///////////
-	double burl=0.75;
-	double btitle=0.75;
-	double bheader=0.75;
-	double bbody=0.75;
-	double banchor=0.75;
-
-	double k1=1000;
-	double pageRankLambda=4;
-	double pageRankLambdaPrime=0;
-	//////////////////////////////////////////
 
 	/////// BM25 data structures - feel free to modify ///////
 
@@ -101,10 +108,18 @@ public class BM25Scorer extends AScorer {
 					avLenTitle += lengthsPerdoc.get("title"); 
 					numTitle++;
 			//	} 
-				
-				lengthsPerdoc.put("body" , (double) doc.body_length);
-				avLenBody += lengthsPerdoc.get("body"); 
+									
+				//lengthsPerdoc.put("body" , (double) doc.body_length);
+				len = 0.0; 
+				if(doc.body_hits!=null)
+				{ 
+					for(String key: doc.body_hits.keySet())
+						len += doc.body_hits.get(key).size();					
+				}
+				lengthsPerdoc.put("body", len);
+				avLenBody += lengthsPerdoc.get("body");
 				numBody++;
+ 
 				
 				/*	len = 0.0; 				
 				if(doc.headers == null)				
@@ -152,30 +167,36 @@ public class BM25Scorer extends AScorer {
 		}
 		
 		if(numURL!=0)
-			avgLengths.put("url", avlenURL/numURL);
+		{ 
+			avgLengths.put("url", avlenURL/numURL);			
+		} 
 		else 
 			avgLengths.put("url", 0.0);
+	//	System.out.println("url " + avgLengths.get("url")); 
 		
 		if(numTitle!=0)
 			avgLengths.put("title", avLenTitle/numTitle);
 		else 
 			avgLengths.put("title", 0.0);
+	//	System.out.println("title " + avgLengths.get("title")); 
 		
 		if(numBody!=0)	
 			avgLengths.put("body", avLenBody/numBody);
 		else
 			avgLengths.put("body", 0.0);
+	//	System.out.println("body " + avgLengths.get("body"));
 		
 		if(numHeader!=0)
 			avgLengths.put("header", avLenHeader/numHeader);
 		else 
 			avgLengths.put("header", 0.0);
+	//	System.out.println("header " + avgLengths.get("header"));
 		
 		if(numAnchor!=0)
 			avgLengths.put("anchor", avLenAnchor/numAnchor);
 		else 
 			avgLengths.put("anchor", 0.0);
-			
+	//	System.out.println("anchor " + avgLengths.get("anchor"));
 		double mappedPageRank; 
 		for(Document d: lengths.keySet())
 		{ 	
@@ -192,6 +213,7 @@ public class BM25Scorer extends AScorer {
 			
 			// pageRank scores
 			mappedPageRank = pageRankLambda* Math.log(pageRankLambdaPrime + (double)d.page_rank);
+			
 			pagerankScores.put(d, mappedPageRank);						
 		} 
 		

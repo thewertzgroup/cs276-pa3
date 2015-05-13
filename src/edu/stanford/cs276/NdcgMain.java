@@ -8,6 +8,8 @@ import java.util.*;
  * You DO NOT need to modify this class.
  */
 public class NdcgMain {
+	public static int totalQueries = 0;
+	public static double totalSum = 0;
 	public static void main(String[] args) throws IOException {
 		if (args.length < 2) {
 			System.out.println("Please specify two files: (i) the ranked input file and (ii) the input file containing the " +
@@ -35,9 +37,9 @@ public class NdcgMain {
 		br.close();
 		
 		br = new BufferedReader(new FileReader(args[0]));
-		int totalQueries = 0;
+		totalQueries = 0;
 		ArrayList<Double> rels = new ArrayList<Double>();
-		double totalSum = 0;
+		totalSum = 0;
 		
 		while ((strLine = br.readLine()) != null) {
 			if (strLine.trim().charAt(0) == 'q') {
@@ -64,7 +66,7 @@ public class NdcgMain {
 			totalSum = getNdcgQuery(rels, totalSum);
 		}
 		
-		System.out.println(totalSum/totalQueries);
+		System.out.println(totalSum/totalQueries);		 
 	}
 
 	private static double getNdcgQuery(ArrayList<Double> rels, double totalSum) {

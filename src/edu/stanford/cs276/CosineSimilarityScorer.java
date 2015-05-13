@@ -20,22 +20,28 @@ import java.util.Set;
  */
 public class CosineSimilarityScorer extends AScorer 
 {
-
-	public CosineSimilarityScorer(Map<String,Double> idfs) 
-	{
-		super(idfs);
-	}
-
 	/////////////// Weights //////////////////
 
-	double urlweight = 15;
-	double titleweight = 30;
-	double bodyweight = 10;
-	double headerweight = 25;
-	double anchorweight = 30;
+	double urlweight = 1;
+	double titleweight = 0.6;
+	double headerweight = 0.4;
+	double bodyweight = 0.2;
+	double anchorweight = 0.2;
+		
 
-	double smoothingBodyLength = 2000.0; // Smoothing factor when the body length is 0.
 
+	double smoothingBodyLength = 500.0; // Smoothing factor when the body length is 0.
+	/*public CosineSimilarityScorer(Map<String,Double> idfs) 
+	{
+		super(idfs);
+	}*/
+	
+
+	
+	public CosineSimilarityScorer(Map<String,Double> idfs) 
+	{
+		super(idfs);				
+	}
 	//////////////////////////////////////////
 
 	public double getNetScore(Map<String, Map<String, Double>> tfs, Query q, Map<String,Double> tfQuery, Document d) 
@@ -48,6 +54,7 @@ public class CosineSimilarityScorer extends AScorer
 		 * Dot product over the query vector:
 		 * qv_q · (c_u · tf_d,u + c_t · tf_d,t + c_b · tf_d,b + c_h · tf_d,h + c_a · tf_d,a)
 		 */
+		
 		for(String term: tfQuery.keySet())	
 		{	
 			score += tfQuery.get(term) * ( urlweight*tfs.get("url").get(term)
@@ -70,7 +77,12 @@ public class CosineSimilarityScorer extends AScorer
 		/*
 		 * @//TODO : Your code here
 		 */
-		double bodyLength_inv = 1.0/((double)d.body_length + smoothingBodyLength);
+		double bodyLength_inv;
+	//	if(d.body_length == 0 )
+			bodyLength_inv= 1.0/((double)d.body_length + smoothingBodyLength);
+	//	else 
+	//		bodyLength_inv= 1.0/((double)d.body_length );
+		
 		double freq; 
 		
 		for (String term : tfs.get("url").keySet())	
@@ -80,7 +92,8 @@ public class CosineSimilarityScorer extends AScorer
 
 			{ 
 				// apply sublinear scaling ??	
-				//..
+				//..				
+			//	freq = 1.0 + Math.log(freq);
 				// normalize
 				freq *= bodyLength_inv;
 
@@ -93,6 +106,7 @@ public class CosineSimilarityScorer extends AScorer
 			{ 	
 				// apply sublinear scaling ??	
 				//..
+			//	freq = 1.0 + Math.log(freq);
 				// normalize
 				freq *= bodyLength_inv;
 				tfs.get("title").put(term, freq);
@@ -103,7 +117,7 @@ public class CosineSimilarityScorer extends AScorer
 
 			{
 				// apply sublinear scaling first				
-				freq = 1.0 + Math.log(freq);
+		//		freq = 1.0 + Math.log(freq);
 				// normalize
 				freq *= bodyLength_inv;
 				tfs.get("body").put(term, freq);
@@ -115,6 +129,7 @@ public class CosineSimilarityScorer extends AScorer
 			{ 	
 				// apply sublinear scaling ??	
 				//..
+			//	freq = 1.0 + Math.log(freq);
 				// normalize
 				freq *= bodyLength_inv;
 				tfs.get("header").put(term, freq);
@@ -125,7 +140,7 @@ public class CosineSimilarityScorer extends AScorer
 
 			{ 	
 				// apply sublinear scaling ??	
-				freq = 1.0 + Math.log(freq); 
+			//	freq = 1.0 + Math.log(freq); 
 				// normalize
 				freq *= bodyLength_inv;
 				tfs.get("anchor").put(term, freq);
@@ -141,7 +156,7 @@ public class CosineSimilarityScorer extends AScorer
 		
 		this.normalizeTFs(tfs, d, q);
 		
-		Map<String,Double> tfQuery = getQueryFreqs(q);
+		Map<String,Double> tfQuery = getQueryFreqs(q);		
 
 	    return getNetScore(tfs,q,tfQuery,d);
 	}
