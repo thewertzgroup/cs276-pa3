@@ -14,6 +14,7 @@ import edu.stanford.cs276.util.Pair;
  * The entry class for this programming assignment.
  */
 public class Rank {
+	private static final boolean PRINT = false;
 	/**
 	 * Call this function to score and rank documents for some queries, using a specified scoring function.
 	 */
@@ -106,13 +107,13 @@ public class Rank {
 				}
 				
 				String queryStr = "query: " + queryBuilder.toString() + "\n";
-				System.out.print(queryStr);
+				if (PRINT) System.out.print(queryStr);
 				bw.write(queryStr);
 				
 				for (String res : queryRankings.get(query))
 				{
 					String urlString = "  url: " + res + "\n";
-					System.out.print(urlString);
+					if (PRINT) System.out.print(urlString);
 					bw.write(urlString);
 				}
 			}	
@@ -159,13 +160,13 @@ public class Rank {
 			e.printStackTrace();
 		}
 		
-for(double i=1.0; i<=5.0; i+=0.1)
+//for(double i=1.0; i<=5.0; i+=0.1)
+//{
+for(double j=0.0; j<=1.0; j+=0.1)
 {
-//for(double j=0.0; j<=1.0; j+=0.1)
-//{
-//for(double k=0.0; k<=1.0; k+=0.1)
-//{
-BM25Scorer.k1 = i; BM25Scorer.pageRankLambda = 1.0; BM25Scorer.pageRankLambdaPrime = 0.1;
+for(double k=0.0; k<=1.0; k+=0.1)
+{
+BM25Scorer.k1 = 1.7; BM25Scorer.pageRankLambda = j; BM25Scorer.pageRankLambdaPrime = k;
 
 /*		for (String permutation : AScorer.tfTypePermutations())
 		{
@@ -179,16 +180,20 @@ BM25Scorer.k1 = i; BM25Scorer.pageRankLambda = 1.0; BM25Scorer.pageRankLambdaPri
 			// Print results and save them to file (This is not necessary)
 	
 			// Write to file to use ndcg.java
-			String outputFilePath = "queryRankings.rk" + "." + "k1." + BM25Scorer.k1 + ".L." + BM25Scorer.pageRankLambda + ".LPrime." + BM25Scorer.pageRankLambdaPrime ;
+			String outputFilePath = "queryRankings.rk.Vj.sigmoid" + "." + "k1." + BM25Scorer.k1 + ".L." + BM25Scorer.pageRankLambda + ".LPrime." + BM25Scorer.pageRankLambdaPrime ;
 //			String outputFilePath = "queryRankings.rk" + "." + permutation;
 //			String outputFilePath = "queryRankings.rk";
 			writeRankedResultsToFile(queryRankings, outputFilePath);
+
+			// Print results
+			if (PRINT) printRankedResults(queryRankings);
+			
+			if (!PRINT) System.out.print(".");
 /*		}
 */		
-//}
-//}
 }
-		// Print results
-		//printRankedResults(queryRankings);
+}
+//}
+		if (!PRINT) System.out.println();
 	}
 }

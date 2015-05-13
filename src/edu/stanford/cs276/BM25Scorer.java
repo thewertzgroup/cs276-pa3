@@ -209,13 +209,13 @@ public class BM25Scorer extends AScorer {
 		// Choose log/saturation/sigmoid function
 		
 		// log
-		score = Math.log(pageRankLambdaPrime + f);
+		//score = Math.log(pageRankLambdaPrime + f);
 		
 		// saturation
-		// score = f / (pageRankLambdaPrime + f);
+		//score = f / (pageRankLambdaPrime + f);
 		
 		// sigmoid - do not have second derivative
-		// score = 1 / (pageRankLambdaPrime + Math.exp(-f * pageRankLambdaPrimePrime));
+		score = 1 / (1 + Math.exp(-f * pageRankLambdaPrime));
 		
 		return score;
 	}
