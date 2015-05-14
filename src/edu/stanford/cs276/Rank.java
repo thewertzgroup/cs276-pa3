@@ -14,7 +14,7 @@ import edu.stanford.cs276.util.Pair;
  * The entry class for this programming assignment.
  */
 public class Rank {
-	private static final boolean PRINT = false;
+	private static final boolean PRINT = true;
 	/**
 	 * Call this function to score and rank documents for some queries, using a specified scoring function.
 	 */
@@ -162,11 +162,11 @@ public class Rank {
 		
 //for(double i=1.0; i<=5.0; i+=0.1)
 //{
-for(double j=0.0; j<=1.0; j+=0.1)
-{
-for(double k=0.0; k<=1.0; k+=0.1)
-{
-BM25Scorer.k1 = 1.7; BM25Scorer.pageRankLambda = j; BM25Scorer.pageRankLambdaPrime = k;
+//for(double j=0.0; j<=1.0; j+=0.1)
+//{
+//for(double k=0.0; k<=1.0; k+=0.1)
+//{
+BM25Scorer.k1 = 1.7; BM25Scorer.pageRankLambda = 1.0; BM25Scorer.pageRankLambdaPrime = 0.0;
 
 /*		for (String permutation : AScorer.tfTypePermutations())
 		{
@@ -191,8 +191,8 @@ BM25Scorer.k1 = 1.7; BM25Scorer.pageRankLambda = j; BM25Scorer.pageRankLambdaPri
 			if (!PRINT) System.out.print(".");
 /*		}
 */		
-}
-}
+//}
+//}
 //}
 		if (!PRINT) System.out.println();
 	}
