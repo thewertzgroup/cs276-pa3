@@ -12,6 +12,7 @@ public class NdcgMain {
 	public static double totalSum = 0;
 	public static void main(String[] args) throws IOException {
 		if (args.length < 2) {
+			
 			System.out.println("Please specify two files: (i) the ranked input file and (ii) the input file containing the " +
 					"relevance scores.");
 			System.exit(1);

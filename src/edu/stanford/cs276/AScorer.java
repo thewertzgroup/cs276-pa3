@@ -80,6 +80,11 @@ public abstract class AScorer {
 	 */
 
     /////////////////////////////////////////////////////////////
+	public String[] getURLTerms(Document d)
+	{
+		return d.url.split("[^a-zA-Z0-9']");
+	}
+	
 	List<String> parseURL(String url)
 	{ 
 		String[] urlTerms = url.split("[^a-zA-Z0-9]");// splitting on non alphanumeric characters
@@ -88,6 +93,13 @@ public abstract class AScorer {
 			urlTerms[ind] = urlTerms[ind].toLowerCase(); 		
 		return Arrays.asList(urlTerms); 
 	}
+	
+	
+	public String[] getTitleTerms(Document d)
+	{
+		return d.title.split(" ");
+	}
+	
 	
 	List<String> parseTitle(String title)
 	{ 
@@ -106,10 +118,15 @@ public abstract class AScorer {
 		
 	}
 	
+	public String[] getHeaderTerms(String h)
+	{
+		return h.split(" ");
+	}
+	
 	List<String> parseHeaders(List<String> headers)
 	{
 		// all headers in one string 
-		String allHeaders = ""; 
+		String allHeaders = "" ; 
 		if(headers!=null)
 		{ 
 		//	System.out.println("num of headers " + headers.size()); 
@@ -120,6 +137,11 @@ public abstract class AScorer {
 		String[] headersTerms = allHeaders.split(" ");// splitting on space
 
 		return Arrays.asList(headersTerms); 
+	}
+	
+	public String[] getAnchorTerms(String a)
+	{
+		return a.split(" ");
 	}
 	
 	Map<List<String>, Integer> parseAnchors(Map<String, Integer> anchors)

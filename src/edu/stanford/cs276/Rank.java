@@ -2,6 +2,7 @@ package edu.stanford.cs276;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -180,9 +181,17 @@ public class Rank {
 		// Print results
 		printRankedResults(queryRankings);
 		
+	 
 	//	//write to file to use ndcg.java
-	//	String outputFilePath = "queryRankings.rk";
-	//	writeRankedResultsToFile(queryRankings, outputFilePath);
+	/*	String outputFilePath = "queryRankings.rk";
+		writeRankedResultsToFile(queryRankings, outputFilePath);
+	
+		String [] argAr = new String[2]; 
+		argAr[0] = "queryRankings.rk"; 
+		argAr[1] = "./2015.data/pa3.rel.dev"; 
+		NdcgMain.main(argAr);*/
+		
+		
 																				
 									
 									
